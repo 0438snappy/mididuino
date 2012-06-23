@@ -179,14 +179,29 @@ void GuiClass::display() {
 }
 
 inline void
-suppress_zero(char* dst, uint16_t value)
+// Mods TT 23/06/2012 - hack to display '-' for negative values
+suppress_zero(char* dst, int16_t value)
 {
+  bool negative = false;
+  if(value<0){
+  	negative = true;
+  	value*=-1;
+  }
   dst[3] = ' ';
   dst[2] = value % 10 + '0';
   value /= 10;
   dst[1] = value ? (value % 10 + '0') : ' ';
   value /= 10;
   dst[0] = value ? (value % 10 + '0') : ' ';
+  if (negative){
+    // Try to put the '-' char to the left of the value, but if value>99 then place it to the right
+  	if (dst[0] == ' '){
+		dst[0] = '-';
+	} else {
+	    dst[3] = '-';
+	}
+  }
+  
 }
 
 char hex2c(uint8_t hex) {
