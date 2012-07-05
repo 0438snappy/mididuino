@@ -1,4 +1,5 @@
-#include <Platform.h>
+//#include <Platform.h>
+#include <WProgram.h>
 #include <CCHandler.h>
 
 class OctatrackTransposeSketch : public Sketch{  
