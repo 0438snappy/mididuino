@@ -1,5 +1,5 @@
-//#include <Platform.h>
-#include <WProgram.h>
+#include <Platform.h>
+//#include <WProgram.h>
 //#include<avr/pgmspace.h>
 
 #define TETRA_MIDI_CHANNEL (13 - 1) // Midi Channel 13

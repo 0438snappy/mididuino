@@ -76,6 +76,11 @@ public:
    * is overloaded.
    **/
   bool pressmode;
+  
+  /**
+   * This variable stores whether the encoder button is currently pressed or not
+   **/
+  bool isPressed;
 
   /**
    * If this variable is set, the encoder is locked, and won't update

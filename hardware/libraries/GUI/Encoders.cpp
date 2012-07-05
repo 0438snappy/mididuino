@@ -137,6 +137,7 @@ void Encoder::clear() {
 
 int Encoder::update(encoder_t *enc) {
   cur = cur + enc->normal + (pressmode ? 0 : (fastmode ? fastmodestep * enc->button : enc->button));
+  isPressed = enc->button ? true : false;
   return cur;
 }
 
@@ -162,7 +163,7 @@ void PEnumEncoder::displayAt(int i) {
 /* RangeEncoder */
 int RangeEncoder::update(encoder_t *enc) {
   int inc = enc->normal + (pressmode ? 0 : (fastmode ? fastmodestep * enc->button : enc->button));
-  
+  isPressed = enc->button ? true : false;
   cur = limit_value(cur, inc, min, max);
   return cur;
 }
