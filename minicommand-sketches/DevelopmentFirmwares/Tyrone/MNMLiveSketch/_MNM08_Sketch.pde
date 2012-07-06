@@ -44,12 +44,12 @@ public:
     else if (EVENT_RELEASED(event, Buttons.BUTTON1)) {
       popPage(&switchPage);
     } 
-    if (BUTTON_DOWN(Buttons.BUTTON2)) {
+    if (BUTTON_DOWN(Buttons.BUTTON3)) {
       if (EVENT_PRESSED(event, Buttons.BUTTON4)) {
         MNM.revertToCurrentKit(true);
         GUI.flash_strings_fill("REVERT TO KIT:", MNM.kit.name);
       } 
-      else if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
+      else if (EVENT_PRESSED(event, Buttons.BUTTON1)) {
         MNM.revertToCurrentTrack(true);
         GUI.flash_strings_fill("REVERT TO TRK ", "");
         GUI.setLine(GUI.LINE1);

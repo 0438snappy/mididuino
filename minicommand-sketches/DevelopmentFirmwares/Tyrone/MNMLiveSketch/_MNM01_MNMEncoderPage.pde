@@ -242,6 +242,7 @@ void MNMEncoderPage::clearEncoder(uint8_t i) {
       	realEncoders[i].channel = 0;
       	realEncoders[i].initMNMEncoder(0, 0, "___", 0);
       	ccHandler.incomingCCs.clear();
+        recEncoders[i].clearRecording();
 }
 
 // assigns the last incoming cc in the cchandler buffer to the specified encoder
@@ -263,68 +264,81 @@ void MNMEncoderPage::learnEncoder(uint8_t i) {
 
 bool MNMEncoderPage::handleEvent(gui_event_t *event) {
 
-  // Button3 while Button1 is UP and Button3 is UP = start/stop Encoder Record Mode
-  if (BUTTON_UP(learnButton) && BUTTON_UP(clearButton)) {
-  	if (EVENT_PRESSED(event, recordButton)) {
-  		GUI.flash_strings_fill("RECORD MODE ON", "");
-    	startRecording();
-    	return true;
-  	}
-	if (EVENT_RELEASED(event, recordButton)) {
-  		GUI.flash_strings_fill("RECORD MODE OFF", "");	
-    	stopRecording();
-   		return true;
-  	}
-  }
-
-  // Pressing Encoder while Button2 is UP and Button3 is DOWN and Button4 is DOWN = clear Encoder Recording
-  if (BUTTON_DOWN(clearButton) && BUTTON_UP(learnButton) && BUTTON_DOWN(recordButton)) {
-    for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
-      if (EVENT_PRESSED(event, i)) {
-        GUI.setLine(GUI.LINE1);
-        GUI.flash_string_fill("CLEAR RECORDING:");
-        GUI.setLine(GUI.LINE2);
-        GUI.flash_put_value(0, i + 1);
-        clearRecording(i);
-      }
-    }
-  }
-
-  // Pressing Encoder while Button2 is UP and Button4 is DOWN = clear CC assigned to Encoder
-  if (BUTTON_DOWN(clearButton) && BUTTON_UP(learnButton) && BUTTON_UP(recordButton)) {
-    for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
-      if (EVENT_PRESSED(event, i)) {
-		    GUI.setLine(GUI.LINE1);
-		    GUI.flash_string_fill("CLEAR ENCODER CC");
-		    GUI.setLine(GUI.LINE2);
-		    GUI.flash_put_value(0, i + 1);      
-        	clearEncoder(i);
-      }
-    }
-  }
-
-  // Pressing Encoder while Button2 is DOWN and Button4 is UP = assign last incoming CC to Encoder  
-  if (BUTTON_UP(clearButton) && BUTTON_DOWN(learnButton) && BUTTON_UP(recordButton)) {
-    for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
-      if (EVENT_PRESSED(event, i)) {
-		    GUI.setLine(GUI.LINE1);
-		    GUI.flash_string_fill("LEARN ENCODER CC");
-		    GUI.setLine(GUI.LINE2);
-		    GUI.flash_put_value(0, i + 1);      
-        	learnEncoder(i);
-        	return true;
-      } 
-    } 
+  /*
+  *
+  *  LEARN MODE FUNCTIONS - activated by pressing button 4 + something else...
+  *
+  */
+  if (BUTTON_UP(Buttons.BUTTON3) && BUTTON_DOWN(Buttons.BUTTON4) ) {
     
-  // Pressing Button 1 while Button2 is DOWN and Button4 is UP = assign last 4 incoming CCs to Encoders  
-	if (EVENT_PRESSED(event, Buttons.BUTTON1)) {
-  		GUI.flash_strings_fill("AUTO LEARN", "LAST 4 CCs");	
-  		autoLearnLast4();
-   		return true;
-  	}      
+      // Button 4 + encoder = assign last incoming CC to Encoder  
+      for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
+        if (EVENT_PRESSED(event, i)) {
+            GUI.setLine(GUI.LINE1);
+            GUI.flash_string_fill("LEARN ENCODER CC");
+            GUI.setLine(GUI.LINE2);
+            GUI.flash_put_value(0, i + 1);      
+      	    learnEncoder(i);
+      	    return true;
+        } 
+      }
     
-  }  
+      // Button 4 + Button 2 = assign last 4 incoming CCs to Encoders  
+      if (EVENT_PRESSED(event, Buttons.BUTTON2)) {
+        GUI.flash_strings_fill("AUTO LEARN", "LAST 4 CCs");
+        autoLearnLast4();
+        return true;
+      }
+  }
   
+  /*
+  *
+  *  REC MODE - toggled on/off by pressing button 3 without any other buttons
+  *
+  */
+  if (BUTTON_UP(Buttons.BUTTON2) && BUTTON_UP(Buttons.BUTTON4)) {
+      if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
+        GUI.flash_strings_fill("RECORD MODE ON", "");
+        startRecording();
+        return true;
+      }
+      if (EVENT_RELEASED(event, Buttons.BUTTON3)) {
+        GUI.flash_strings_fill("RECORD MODE OFF", "");
+        stopRecording();
+        return true;
+      }
+  }
   
+  /*
+  *
+  * CLEAR MODE FUNCTIONS - activated by pressing button 2 + something else...
+  *
+  */
+  if (BUTTON_DOWN(Buttons.BUTTON2)) {
+    
+      // Pressing Button2 + Encoder = Clear Encoder Recording
+      for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
+        if (EVENT_PRESSED(event, i)) {
+            GUI.setLine(GUI.LINE1);
+            GUI.flash_string_fill("CLEAR RECORDING:");
+            GUI.setLine(GUI.LINE2);
+            GUI.flash_put_value(0, i + 1);
+            clearRecording(i);
+        }
+      }
+        
+      // Pressing Button2 + Button 3 + Encoder = Clear CC assigned to Encoder
+      if (BUTTON_DOWN(Buttons.BUTTON3)) {
+        for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
+          if (EVENT_PRESSED(event, i)) {
+            GUI.setLine(GUI.LINE1);
+            GUI.flash_string_fill("CLEAR ENCODER CC");
+            GUI.setLine(GUI.LINE2);
+            GUI.flash_put_value(0, i + 1);
+            clearEncoder(i);            
+          }
+        }
+      }
+  }
   return false;
 }
