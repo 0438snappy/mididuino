@@ -1,5 +1,3 @@
-
-
 int mod(int x, int m) {
     int r = x%m;
     return r<0 ? r+m : r;
@@ -176,13 +174,12 @@ class TetraEditorPage : public EncoderPage {
             
             // Pressing an Encoder will flash the long name (and enum value if exists)
             for (int i = Buttons.ENCODER1; i<=  Buttons.ENCODER4; i++){
-                if (BUTTON_DOWN(i)) {   
+                if (EVENT_PRESSED(event, i)) {  
                     // call DisplayAt to flash long strings
                     encoders[i]->isPressed = true;
                     encoders[i]->displayAt(i);
-                } else {
+                } else if (EVENT_RELEASED(event, i)) {
                     encoders[i]->isPressed = false;
-                    encoders[i]->displayAt(i);                  
                 }
             }
             

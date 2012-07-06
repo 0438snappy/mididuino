@@ -4,19 +4,21 @@ class TetraEditorSketch : public Sketch{
     public:
     bool muted;
     TetraEditorPage tetraEditorPage;
+    SketchSwitchPage switchPage;
     
     TetraEditorSketch() : tetraEditorPage(){
       
     }  
        
 //    void setupSwitchPage(){
-//       switchPage.initPages(&djEqPage, &filterPage, &recorderPage, NULL);
-//       switchPage.parent = this;
+
 //    }
       
     void setupPages(){
         tetraEditorPage.setup();
-        //tetraEditorPage.setEditorPage(&page1); 
+        switchPage.initPages(NULL, NULL, NULL, &tetraEditorPage);
+        switchPage.parent = this;        
+        
     }
        
     void getName(char *n1, char *n2) {
