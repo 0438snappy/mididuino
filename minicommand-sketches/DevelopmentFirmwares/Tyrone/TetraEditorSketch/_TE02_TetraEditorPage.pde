@@ -55,6 +55,16 @@ tetra_editor_page_t tetraEditorPageEncoders[NUM_TETRA_EDITOR_PAGES] = {
 };
 
 
+/**
+ * Creates a page displaying some static text and 4 encoder options, designed to be used as a modal GUI.  
+ *
+ * Before this page can be used, the caller page must set the Tetra paramNumber and midi channel.
+ *
+ * The user has the option to either:
+ *     -  click an encoder, which will send a NRPN message to assign the paramNumber to the corresponding AssignableParameter pot on the Tetra
+ *     -  click any button, which will "cancel" the operation and return display to the calling page.
+ *
+ **/
 class TetraParameterAssignPage : public EncoderPage {
 
   public: 
@@ -113,10 +123,27 @@ TetraParameterAssignPage tetraParameterAssignPage;
 
 
 
+/**
+ *
+ * GLOBAL VARIABLE TO HOLD THE CURRENTLY SELECTED TETRA EDITOR PAGE
+ *
+ **/
+int pageIndex;
+
+
+/**
+ *
+ * Creates a page displaying 4 NRPN encoders, designed to be used as the main page for the Tetra Editor
+ *
+ * GUI/Button configuration:
+ *     -  Pressing Button 2 (bottom left) displays "previous" editor page
+ *     -  Pressing Button 3 (bottom right) displays "next" editor page
+ *     -  Pressing Button 4 (top right) + encoder "selects" the encoder to be assigned to Tetra Assignable Param, and displays the TetraParameterAssignPage
+ *
+ **/
 class TetraEditorPage : public EncoderPage {
 
-  public: 
-        int pageIndex;
+  public:         
     
         TetraEditorPage()
         {
@@ -153,7 +180,7 @@ class TetraEditorPage : public EncoderPage {
             if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
                 pageIndex = mod(pageIndex + 1, NUM_TETRA_EDITOR_PAGES);
                 setEditorPage (&tetraEditorPageEncoders[pageIndex]);
-                 return true;
+                return true;
             }  
             
             // Pressing Button 4 (top right) + encoder "selects" the encoder to be assigned to Tetra Assignable Param
@@ -190,6 +217,119 @@ class TetraEditorPage : public EncoderPage {
 };
 
 
+
+/**
+ * Creates a page feature 4 encoders that can be configured using a
+ * template class parameter. These 4 encoders are overlayed with
+ * recording encoder to provide recording functionality. 
+ *
+ * Redefinition of Manuel's AutoEncoderPage with some changes to 
+ * button configurations, plus a couple of new methods to learn and clear CCs
+ * for specific encoders, plus updated to handle TetraNRPN encoders
+ *
+ * Encoders are not autolearned, but need to be selected manually from the TetraEditorPage
+ *
+ **/
+class AutoNRPNEncoderPage : public EncoderPage, public ClockCallback {
+ public:
+  TetraNRPNEncoder realEncoders[4];
+  const static int RECORDING_LENGTH = 64; // recording length in 32th
+  RecordingEncoder<RECORDING_LENGTH> recEncoders[4];
+
+  bool muted;
+  void on32Callback(uint32_t counter);
+  void startRecording();
+  void stopRecording();
+  void clearRecording();
+  void clearRecording(uint8_t i);
+  virtual void setup();
+
+  void clearEncoder(uint8_t i);
+  void learnEncoder(uint8_t i, TetraNRPNEncoder *enc);
+
+  virtual bool handleEvent(gui_event_t *event);
+};
+#define NRPN_AUTO_PAGES_CNT 3
+AutoNRPNEncoderPage autoNRPNPages[NRPN_AUTO_PAGES_CNT]; 
+
+
+
+/**
+ * Creates a page displaying some static text and 4 encoder options, designed to be used as a modal GUI to assign parameters back to the TetraAutoEncoderPages.  
+ *
+ * The user has the option to either:
+ *     -  click an encoder, which will "select" the parameter and assign it back to the TetraAutoEncoderPage
+ *     -  click any button, which will "cancel" the operation and return display to the calling page.
+ *
+ **/
+class TetraParameterSelectPage : public EncoderPage {
+
+  public: 
+    
+        TetraParameterSelectPage()
+        {
+	}
+        
+        uint8_t targetEncoderIndex;
+        AutoNRPNEncoderPage * targetPage;
+
+        void setup(){   
+          if (!isSetup){ 
+              setEditorPage();
+              targetEncoderIndex = 0;
+              targetPage = NULL;
+              isSetup = true;
+          }
+        }      
+        
+        void display() {
+            GUI.setLine(GUI.LINE1); 
+            GUI.put_string_fill("-> SELECT PARAM:");
+            GUI.setLine(GUI.LINE2); 
+            GUI.put_string_at(0, encoders[0]->getName());
+            GUI.put_string_at(4, encoders[1]->getName());
+            GUI.put_string_at(8, encoders[2]->getName());
+            GUI.put_string_at(12, encoders[3]->getName());            
+        }
+        
+        void setEditorPage(){ 
+            tetra_editor_page_t *page = &tetraEditorPageEncoders[pageIndex];
+            encoders[0] = page->encoders[0];
+            encoders[1] = page->encoders[1];
+            encoders[2] = page->encoders[2];
+            encoders[3] = page->encoders[3];
+            redisplayPage ();           
+        }
+        
+	bool handleEvent(gui_event_t *event) {
+   
+            // Pressing an encoder will assign the param to the auto encoder page
+            for (int i = Buttons.ENCODER1; i<=  Buttons.ENCODER4; i++){
+                if (EVENT_PRESSED(event, i)) {
+                    
+                    if (targetPage != NULL) {
+                      targetPage->learnEncoder(targetEncoderIndex, tetraEditorPageEncoders[pageIndex].encoders[i]); 
+                      targetPage->redisplayPage();
+                    }                    
+                    
+                    GUI.popPage(this);
+                }
+            }
+            
+            // Pressing any Button will "Cancel" the assign and pop back to the auto encoder page
+            for (int i = Buttons.BUTTON1; i<=  Buttons.BUTTON4; i++){
+                if (EVENT_PRESSED(event, i)) {
+                    GUI.popPage(this);
+                    return true;
+                }
+            }                               
+            
+            return false;
+
+	}
+
+};
+TetraParameterSelectPage tetraParameterSelectPage;
 
 
 

@@ -1,5 +1,5 @@
-//#include <Platform.h>  //Midi-Ctrl 0018
-#include <WProgram.h>  //Midi-Ctrl 0017
+#include <Platform.h>  //Midi-Ctrl 0018
+//#include <WProgram.h>  //Midi-Ctrl 0017
 
 #define TETRA_MIDI_CHANNEL (13 - 1) // Midi Channel 13
 #define NUM_TETRA_EDITOR_PAGES 24
@@ -24,16 +24,18 @@ public:
     return channel;
   }
   
-  virtual void initNRPNEncoder(uint8_t _channel, uint16_t _nrpn) {
-    nrpn = _nrpn;
-    channel = _channel;
+  virtual void init() {
+    nrpn = 0;
+    channel = 0;
+    setName("___");
+    clear();
   }  
 
   /** Create a NRPN encoder sending NRPN messages with number _nrpn on _channel. **/
   NRPNEncoder(uint16_t _nrpn = 0, uint8_t _channel = 0, const char *_name = NULL, int _min = 0, int _max = 127, int init = 0) :
-    RangeEncoder(_max, _min, _name, init) {
-    initNRPNEncoder(_channel, _nrpn);
-    handler = NRPNEncoderHandle;
+    RangeEncoder(_max, _min, _name, init, NRPNEncoderHandle) {
+    nrpn = _nrpn;
+    channel = _channel;
   }
 
 };
@@ -80,7 +82,7 @@ public:
   }  
 
   /** Create a NRPN encoder sending NRPN messages with number _nrpn on _channel. **/
-  TetraNRPNEncoder(uint16_t _paramNumber, uint16_t _nrpn = 0, uint8_t _channel = 0, const char *_name = NULL, char *_longName = NULL, int _min = 0, int _max = 127, int init = 0) :
+  TetraNRPNEncoder(uint16_t _paramNumber = 0, uint16_t _nrpn = 0, uint8_t _channel = 0, const char *_name = NULL, char *_longName = NULL, int _min = 0, int _max = 127, int init = 0) :
     NRPNEncoder(_nrpn, _channel, _name, _min, _max, init) {
     setLongName(_longName);
     paramNumber = _paramNumber;
@@ -90,337 +92,15 @@ public:
 
 
 
-//
-//  FANCY & ENUM ENCODERS NOT WORKING...  PROBLEM WITH LARGE CHAR ARRAYS?
-//
-
-
-///**
-// * NRPN Enum Encoder Class customised for Tetra
-// **/
-//class TetraNRPNEnumEncoder : public TetraNRPNEncoder {
-//	
-//public:
-//
-//  const char **enumLongStrings;
-//  int cnt;
-//
-//	/**
-//	 * Create an enumeration encoder allowing to choose between _cnt
-//	 * different options. Each option should be described by a 3
-//	 * character string in the shortStrings[] array. Turning the encoder will
-//	 * display the correct shortString on the encoder as well as flash the enum value from the longStrings array.
-//	 **/
-//  TetraNRPNEnumEncoder(const char *longStrings[] = NULL, int _cnt = 0, uint16_t _paramNumber = 0, uint16_t _nrpn = 0, uint8_t _channel = 0, const char *_name = NULL, char *_longName = NULL, int _min = 0, int _max = 127, int init = 0) :
-//      TetraNRPNEncoder(_paramNumber, _nrpn, _channel, _name, _longName, _min, _max, init) {
-//      enumLongStrings = longStrings;
-//      cnt = _cnt;
-//  }
-//
-//  virtual void displayAt(int i){
-//    redisplay = false;
-//    if (hasChanged() || isPressed) {
-//        // Flash Long Encoder Name on GUI.LINE1
-//        GUI.setLine(GUI.LINE1);
-//        GUI.flash_string_fill(longName);
-//        // Flash Enum Long Value on GUI.LINE2        
-//        GUI.setLine(GUI.LINE2);
-//        GUI.flash_string_fill(enumLongStrings[getValue()]);        
-//    }
-//  }
-//
-//
-//};
-
-
-
-
-///**
-// * NRPN Enum Encoder Class customised for Tetra Oscillator Shapes
-// *
-// * encoder values 4 - 103 display as "PULSE WIDTH nn"
-// **/
-//class TetraOscShapeNRPNEnumEncoder : public TetraNRPNEncoder {
-//	
-//public:
-//
-//  char **enumShortStrings;
-//  char **enumLongStrings;
-//  int cnt;
-//	
-//  TetraOscShapeNRPNEnumEncoder(char *shortStrings[] = NULL, char *longStrings[] = NULL, int _cnt = 0, uint16_t _paramNumber = 0, uint16_t _nrpn = 0, uint8_t _channel = 0, const char *_name = NULL, char *_longName = NULL, int _min = 0, int _max = 127, int init = 0) :
-//        TetraNRPNEncoder(_paramNumber, _nrpn, _channel, _name, _longName, _min, _max, init) {
-//            enumShortStrings = shortStrings;
-//            enumLongStrings = longStrings;
-//            cnt = _cnt;
-//   }
-//
-//  virtual void displayAt(int i){
-//    int enumValue = MIN(getValue(), (OSC_SHAPES_CNT - 1));
-//    char *shortStringValue;  
-//    char *longStringValue;
-//   
-//    shortStringValue = enumShortStrings[enumValue];
-//    longStringValue = enumLongStrings[enumValue];     
-//    
-//    int pulseWidthValue = getValue() - (OSC_SHAPES_CNT - 1);
-//    if (pulseWidthValue >= 0){
-//       // Re-use the display implementation from GUI.cpp::suppress_zero      
-//       shortStringValue[2] = pulseWidthValue % 10 + '0';
-//       longStringValue[13] = pulseWidthValue % 10 + '0';
-//       pulseWidthValue /= 10;
-//       shortStringValue[1] = pulseWidthValue ? (pulseWidthValue % 10 + '0') : ' ';
-//       longStringValue[12] = pulseWidthValue ? (pulseWidthValue % 10 + '0') : ' ';
-//    } 
-//    
-//    GUI.put_string_at(i * 4, shortStringValue);
-//    redisplay = false;
-//    if (hasChanged() || isPressed) {
-//        // Flash Long Encoder Name on GUI.LINE1
-//        GUI.setLine(GUI.LINE1);
-//        GUI.flash_string_fill(longName);
-//        // Flash Enum Long Value on GUI.LINE2        
-//        GUI.setLine(GUI.LINE2);
-//        GUI.flash_string_fill(longStringValue);        
-//    }
-//  }
-//};
-//
-///**
-// * NRPN Enum Encoder Class customised for Tetra LFO Frequencies
-// *
-// * encoder values 0 - 150 display as "UNSYNCED nnn"
-// **/
-//class TetraLFOFrequencyNRPNEnumEncoder : public TetraNRPNEncoder {
-//	
-//public:
-//
-//  char **enumShortStrings;
-//  char **enumLongStrings;
-//  int cnt;
-//	
-//  TetraLFOFrequencyNRPNEnumEncoder(char *shortStrings[] = NULL, char *longStrings[] = NULL, int _cnt = 0, uint16_t _paramNumber = 0, uint16_t _nrpn = 0, uint8_t _channel = 0, const char *_name = NULL, char *_longName = NULL, int _min = 0, int _max = 127, int init = 0) :
-//        TetraNRPNEncoder(_paramNumber, _nrpn, _channel, _name, _longName, _min, _max, init) {
-//            enumShortStrings = shortStrings;
-//            enumLongStrings = longStrings;
-//            cnt = _cnt;
-//   }
-//
-//  virtual void displayAt(int i){
-//    int enumValue = MAX(getValue(), 150) - 150;
-//    char *shortStringValue;  
-//    char *longStringValue;
-//   
-//    shortStringValue = enumShortStrings[enumValue];
-//    longStringValue = enumLongStrings[enumValue];     
-//    
-//    int lfoFreqValue = getValue();
-//    if (lfoFreqValue <= 150){
-//       // Re-use the display implementation from GUI.cpp::suppress_zero      
-//       shortStringValue[2] = lfoFreqValue % 10 + '0';
-//       longStringValue[11] = lfoFreqValue % 10 + '0';
-//       lfoFreqValue /= 10;
-//       shortStringValue[1] = lfoFreqValue ? (lfoFreqValue % 10 + '0') : ' ';
-//       longStringValue[10] = lfoFreqValue ? (lfoFreqValue % 10 + '0') : ' ';
-//       lfoFreqValue /= 10;
-//       shortStringValue[0] = lfoFreqValue ? (lfoFreqValue % 10 + '0') : ' ';
-//       longStringValue[9] = lfoFreqValue ? (lfoFreqValue % 10 + '0') : ' ';       
-//    } 
-//    
-//    GUI.put_string_at(i * 4, shortStringValue);
-//    redisplay = false;
-//    if (hasChanged() || isPressed) {
-//        // Flash Long Encoder Name on GUI.LINE1
-//        GUI.setLine(GUI.LINE1);
-//        GUI.flash_string_fill(longName);
-//        // Flash Enum Long Value on GUI.LINE2        
-//        GUI.setLine(GUI.LINE2);
-//        GUI.flash_string_fill(longStringValue);        
-//    }
-//  }
-//};
-
-
-//#define OSC_SHAPES_CNT 5
-//#define LFO_FREQS_CNT 17
-//#define MOD_SOURCE_CNT 21
-//#define MOD_DESTINATION_CNT 50
-
-//char* oscShapeShortNames[OSC_SHAPES_CNT] = {
-//"OFF", 
-//"SAW", 
-//"TRI", 
-//"S/T", 
-//"P  "
-//};
-
-//char* oscShapeLongNames[OSC_SHAPES_CNT] = {
-//  "OFF", 
-//  "SAWTOOTH", 
-//  "TRIANGLE", 
-//  "SAW/TRIANGLE MIX", 
-//  "PULSE WIDTH   "
-//};
-//
-//char* lfoFrequencyShortNames[LFO_FREQS_CNT] = {
-//    "   ", 
-//    "/32", 
-//    "/16", 
-//    "/8", 
-//    "/6", 
-//    "/4", 
-//    "/3", 
-//    "/2", 
-//    "/15", 
-//    "1xS", 
-//    "2/3", 
-//    "2xS", 
-//    "1/3", 
-//    "4xS", 
-//    "6xS", 
-//    "8xS", 
-//    "16x"
-//};
-//
-//char* lfoFrequencyLongNames[LFO_FREQS_CNT] = {
-//    "UNSYNCED    ", 
-//    "SEQ SPD / 32", 
-//    "SEQ SPD / 16", 
-//    "SEQ SPD / 8", 
-//    "SEQ SPD / 6", 
-//    "SEQ SPD / 4", 
-//    "SEQ SPD / 3", 
-//    "SEQ SPD / 2", 
-//    "SEQ SPD / 1.5", 
-//    "1 CYCLE / STEP", 
-//    "2 CYCLE / 3 STEP", 
-//    "2 CYCLE / STEP", 
-//    "1 CYCLE / 3 STEP", 
-//    "4 CYCLE / STEP", 
-//    "6 CYCLE / STEP", 
-//    "8 CYCLE / STEP", 
-//    "16 CYCLE / STEP" 
-//};
-
-//const char* modDestinationShortNames[MOD_DESTINATION_CNT] = {
-//    "OFF", 
-//    "FQ1", 
-//    "FQ2", 
-//    "F12", 
-//    "MIX", 
-//    "NOI", 
-//    "PW1", 
-//    "PW2", 
-//    "P12", 
-//    "CUT", 
-//    "RES", 
-//    "AMD", 
-//    "VCA", 
-//    "PAN", 
-//    "L1F", 
-//    "L2F", 
-//    "L3F", 
-//    "L4F", 
-//    "ALF", 
-//    "L1A", 
-//    "L2A", 
-//    "L3A", 
-//    "L4A", 
-//    "ALA", 
-//    "FEN", 
-//    "AEN", 
-//    "EN3", 
-//    "ENV", 
-//    "E1A", 
-//    "E2A", 
-//    "E3A", 
-//    "AEA", 
-//    "E1D", 
-//    "E2D", 
-//    "E3D", 
-//    "AED", 
-//    "E1R", 
-//    "E2R", 
-//    "E3R", 
-//    "AER", 
-//    "MD1", 
-//    "MD2", 
-//    "MD3", 
-//    "MD4", 
-//    "FBV", 
-//    "SB1", 
-//    "SB2", 
-//    "FBG", 
-//    "SL1", 
-//    "SL2"
-//};
-
-//const char* modDestinationLongNames[MOD_DESTINATION_CNT] = {
-//    "OFF", 
-//    "OSC1 FREQ", 
-//    "OSC2 FREQ", 
-//    "OSC1&2 FREQ", 
-//    "OSC MIX", 
-//    "NOISE LEVEL", 
-//    "OSC1 PULSE WDT", 
-//    "OSC2 PULSE WDT", 
-//    "OSC1&2 PULSE WDT", 
-//    "VCF FREQ", 
-//    "VCF RESONANCE", 
-//    "VCF AUDIO MOD", 
-//    "VCA LEVEL", 
-//    "PAN SPREAD", 
-//    "LFO1 FREQ", 
-//    "LFO2 FREQ", 
-//    "LFO3 FREQ", 
-//    "LFO4 FREQ", 
-//    "ALL LFO FREQ", 
-//    "LFO1 AMT", 
-//    "LFO2 AMT", 
-//    "LFO3 AMT", 
-//    "LFO4 AMT", 
-//    "ALL LFO AMT", 
-//    "VCF ENV AMT", 
-//    "VCA ENV AMT", 
-//    "ENV3 AMT", 
-//    "ALL ENV AMT", 
-//    "ENV1 ATTACK", 
-//    "ENV2 ATTACK", 
-//    "ENV3 ATTACK", 
-//    "ALL ENV ATTACK", 
-//    "ENV1 DECAY", 
-//    "ENV2 DECAY", 
-//    "ENV3 DECAY", 
-//    "ALL ENV DECAY", 
-//    "ENV1 RELEASE", 
-//    "ENV2 RELEASE", 
-//    "ENV3 RELEASE", 
-//    "ALL ENV RELEASE", 
-//    "MOD1 AMT", 
-//    "MOD2 AMT", 
-//    "MOD3 AMT", 
-//    "MOD4 AMT", 
-//    "FEEDBACK VOLUME", 
-//    "SUB OSC1 LEVEL", 
-//    "SUB OSC2 LEVEL", 
-//    "FEEDBACK GAIN", 
-//    "SEQ1 SLEW", 
-//    "SEQ2 SLEW"
-//};
-
-
-
 
 TetraNRPNEncoder tetraOsc1FreqEncoder(0, 0, TETRA_MIDI_CHANNEL, "FRQ", "OSC1 FREQ", 0, 120, 0);
 TetraNRPNEncoder tetraOsc1TuneEncoder(1, 1, TETRA_MIDI_CHANNEL, "TUN", "OSC1 TUNE", 0, 100, 0);
 TetraNRPNEncoder tetraOsc1ShapeEncoder(2, 2, TETRA_MIDI_CHANNEL, "SHP", "OSC1 SHAPE", 0, 103, 0);
-//TetraOscShapeNRPNEnumEncoder tetraOsc1ShapeEncoder(oscShapeShortNames, oscShapeLongNames, OSC_SHAPES_CNT, 2, 2, TETRA_MIDI_CHANNEL, "SHP", "OSC1 SHAPE", 0, 103, 0);
 TetraNRPNEncoder tetraOsc1GlideEncoder(3, 3, TETRA_MIDI_CHANNEL, "GLI", "OSC1 GLIDE", 0, 127, 0);
 TetraNRPNEncoder tetraOsc1KeyboardEncoder(4, 4, TETRA_MIDI_CHANNEL, "KEY", "OSC1 KEYBOARD", 0, 1, 0);
 TetraNRPNEncoder tetraOsc2FreqEncoder(6, 5, TETRA_MIDI_CHANNEL, "FRQ", "OSC2 FREQ", 0, 120, 0);
 TetraNRPNEncoder tetraOsc2TuneEncoder(7, 6, TETRA_MIDI_CHANNEL, "TUN", "OSC2 TUNE", 0, 100, 0);
 TetraNRPNEncoder tetraOsc2ShapeEncoder(8, 7, TETRA_MIDI_CHANNEL, "SHP", "OSC2 SHAPE", 0, 103, 0);
-//TetraOscShapeNRPNEnumEncoder tetraOsc2ShapeEncoder(oscShapeShortNames, oscShapeLongNames, OSC_SHAPES_CNT, 8, 7, TETRA_MIDI_CHANNEL, "SHP", "OSC2 SHAPE", 0, 103, 0);
 TetraNRPNEncoder tetraOsc2GlideEncoder(9, 8, TETRA_MIDI_CHANNEL, "GLI", "OSC2 GLIDE", 0, 127, 0);
 TetraNRPNEncoder tetraOsc2KeyboardEncoder(10, 9, TETRA_MIDI_CHANNEL, "KEY", "OSC2 KEYBOARD", 0, 1, 0);
 TetraNRPNEncoder tetraSyncEncoder(12, 10, TETRA_MIDI_CHANNEL, "SYN", "SYNC", 0, 1, 0);
@@ -451,26 +131,21 @@ TetraNRPNEncoder tetraVcaEnvDecayEncoder(37, 34, TETRA_MIDI_CHANNEL, "DCY", "VCA
 TetraNRPNEncoder tetraVcaEnvSustainEncoder(38, 35, TETRA_MIDI_CHANNEL, "SUS", "VCA ENV SUSTAIN", 0, 127, 0);
 TetraNRPNEncoder tetraVcaEnvReleaseEncoder(39, 36, TETRA_MIDI_CHANNEL, "REL", "VCA ENV RELEASE", 0, 127, 0);
 TetraNRPNEncoder tetraLfo1FreqEncoder(42, 37, TETRA_MIDI_CHANNEL, "FRQ", "LFO1 FREQ", 0, 166, 0);
-//TetraLFOFrequencyNRPNEnumEncoder tetraLfo1FreqEncoder(lfoFrequencyShortNames, lfoFrequencyLongNames, LFO_FREQS_CNT, 42, 37, TETRA_MIDI_CHANNEL, "FRQ", "LFO1 FREQ", 0, 166, 0);
 TetraNRPNEncoder tetraLfo1ShapeEncoder(43, 38, TETRA_MIDI_CHANNEL, "SHP", "LFO1 SHAPE", 0, 4, 0);
 TetraNRPNEncoder tetraLfo1AmtEncoder(44, 39, TETRA_MIDI_CHANNEL, "AMT", "LFO1 AMT", 0, 127, 0);
 TetraNRPNEncoder tetraLfo1DestinationEncoder(45, 40, TETRA_MIDI_CHANNEL, "DST", "LFO1 DESTINATION", 0, 43, 0);
-//TetraNRPNEnumEncoder tetraLfo1DestinationEncoder(modDestinationLongNames, MOD_DESTINATION_CNT, 45, 40, TETRA_MIDI_CHANNEL, "DST", "LFO1 DESTINATION", 0, 43, 0);
 TetraNRPNEncoder tetraLfo1KeySyncEncoder(46, 41, TETRA_MIDI_CHANNEL, "SYN", "LFO1 KEY SYNC", 0, 1, 0);
 TetraNRPNEncoder tetraLfo2FreqEncoder(47, 42, TETRA_MIDI_CHANNEL, "FRQ", "LFO2 FREQ", 0, 166, 0);
-//TetraLFOFrequencyNRPNEnumEncoder tetraLfo2FreqEncoder(lfoFrequencyShortNames, lfoFrequencyLongNames, LFO_FREQS_CNT, 47, 42, TETRA_MIDI_CHANNEL, "FRQ", "LFO2 FREQ", 0, 166, 0);
 TetraNRPNEncoder tetraLfo2ShapeEncoder(48, 43, TETRA_MIDI_CHANNEL, "SHP", "LFO2 SHAPE", 0, 4, 0);
 TetraNRPNEncoder tetraLfo2AmtEncoder(49, 44, TETRA_MIDI_CHANNEL, "AMT", "LFO2 AMT", 0, 127, 0);
 TetraNRPNEncoder tetraLfo2DestinationEncoder(50, 45, TETRA_MIDI_CHANNEL, "DST", "LFO2 DESTINATION", 0, 43, 0);
 TetraNRPNEncoder tetraLfo2KeySyncEncoder(51, 46, TETRA_MIDI_CHANNEL, "SYN", "LFO2 KEY SYNC", 0, 1, 0);
 TetraNRPNEncoder tetraLfo3FreqEncoder(52, 47, TETRA_MIDI_CHANNEL, "FRQ", "LFO3 FREQ", 0, 166, 0);
-//TetraLFOFrequencyNRPNEnumEncoder tetraLfo3FreqEncoder(lfoFrequencyShortNames, lfoFrequencyLongNames, LFO_FREQS_CNT, 52, 47, TETRA_MIDI_CHANNEL, "FRQ", "LFO3 FREQ", 0, 166, 0);
 TetraNRPNEncoder tetraLfo3ShapeEncoder(53, 48, TETRA_MIDI_CHANNEL, "SHP", "LFO3 SHAPE", 0, 4, 0);
 TetraNRPNEncoder tetraLfo3AmtEncoder(54, 49, TETRA_MIDI_CHANNEL, "AMT", "LFO3 AMT", 0, 127, 0);
 TetraNRPNEncoder tetraLfo3DestinationEncoder(55, 50, TETRA_MIDI_CHANNEL, "DST", "LFO3 DESTINATION", 0, 43, 0);
 TetraNRPNEncoder tetraLfo3KeySyncEncoder(56, 51, TETRA_MIDI_CHANNEL, "SYN", "LFO3 KEY SYNC", 0, 1, 0);
 TetraNRPNEncoder tetraLfo4FreqEncoder(57, 52, TETRA_MIDI_CHANNEL, "FRQ", "LFO4 FREQ", 0, 166, 0);
-//TetraLFOFrequencyNRPNEnumEncoder tetraLfo4FreqEncoder(lfoFrequencyShortNames, lfoFrequencyLongNames, LFO_FREQS_CNT, 57, 52, TETRA_MIDI_CHANNEL, "FRQ", "LFO4 FREQ", 0, 166, 0);
 TetraNRPNEncoder tetraLfo4ShapeEncoder(58, 53, TETRA_MIDI_CHANNEL, "SHP", "LFO4 SHAPE", 0, 4, 0);
 TetraNRPNEncoder tetraLfo4AmtEncoder(59, 54, TETRA_MIDI_CHANNEL, "AMT", "LFO4 AMT", 0, 127, 0);
 TetraNRPNEncoder tetraLfo4DestinationEncoder(60, 55, TETRA_MIDI_CHANNEL, "DST", "LFO4 DESTINATION", 0, 43, 0);
