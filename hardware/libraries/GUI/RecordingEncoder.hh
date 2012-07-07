@@ -110,6 +110,7 @@ void RecordingEncoder<N>::clearRecording() {
   for (int i = 0; i < N; i++) {
     value[i] = -1;
   }  
+  playing = false;
 }
 
 template <int N>
