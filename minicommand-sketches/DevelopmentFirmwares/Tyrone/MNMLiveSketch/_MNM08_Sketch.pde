@@ -1,8 +1,9 @@
+#define MNM_AUTO_PAGES_CNT 4
 
-class MonomachineLiveSketch : 
+class MNMLiveSketch : 
 public Sketch, public MNMCallback, public ClockCallback, public MidiCallback {
 public:  
-  MNMEncoderPage autoMNMPages[4];
+  AutoCCEncoderPage<MNMEncoder> autoMNMPages[MNM_AUTO_PAGES_CNT];
   SwitchPage switchPage;
 
   void setupPages() {
@@ -18,12 +19,12 @@ public:
 
   virtual void setup() {
     setupPages();
-    MNMTask.addOnKitChangeCallback(this, (mnm_callback_ptr_t)&MonomachineLiveSketch::onKitChanged);    
+    MNMTask.addOnKitChangeCallback(this, (mnm_callback_ptr_t)&MNMLiveSketch::onKitChanged);    
     ccHandler.setup();
     setPage(&autoMNMPages[0]);
-//    Midi.addOnNoteOnCallback(this, (midi_callback_ptr_t)&MonomachineLiveSketch::on3ByteCallback);
-//    Midi.addOnNoteOffCallback(this, (midi_callback_ptr_t)&MonomachineLiveSketch::on3ByteCallback); 
-//    Midi.addOnProgramChangeCallback(this, (midi_callback_ptr_t)&MonomachineLiveSketch::on2ByteCallback);   
+//    Midi.addOnNoteOnCallback(this, (midi_callback_ptr_t)&MNMLiveSketch::on3ByteCallback);
+//    Midi.addOnNoteOffCallback(this, (midi_callback_ptr_t)&MNMLiveSketch::on3ByteCallback); 
+//    Midi.addOnProgramChangeCallback(this, (midi_callback_ptr_t)&MNMLiveSketch::on2ByteCallback);   
   }
 
   void on3ByteCallback(uint8_t *msg) {

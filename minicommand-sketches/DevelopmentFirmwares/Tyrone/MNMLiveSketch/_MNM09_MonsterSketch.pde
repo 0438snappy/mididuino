@@ -2,7 +2,7 @@
 //  TOP LEVEL SKETCH
 //
 #include <MidiClockPage.h>
-MonomachineLiveSketch sketch;
+MNMLiveSketch sketch;
 SketchSwitchPage sketchSwitchPage(NULL, &sketch, NULL, NULL, NULL);
 
 void setup() {
