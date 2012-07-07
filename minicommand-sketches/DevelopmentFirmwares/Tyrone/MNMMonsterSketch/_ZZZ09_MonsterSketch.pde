@@ -3,14 +3,18 @@
 //
 #include <MidiClockPage.h>
 MNMMonoPolySketch sketch2;
-MonomachineLiveSketch sketch;
-SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, NULL, NULL);
+MNMLiveSketch sketch3;
+TetraEditorSketch sketch;
+SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, &sketch3, NULL);
+//SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, NULL, NULL);
+//SketchSwitchPage sketchSwitchPage(NULL, &sketch2, &sketch, NULL, NULL);
 
 void setup() {
   initMNMTask();
   
-  sketch.setupMonster(true);
   sketch2.setupMonster(true);
+  sketch.setupMonster(true);  
+  sketch3.setupMonster(true);
   GUI.setSketch(&_defaultSketch);
   GUI.setPage(&sketchSwitchPage);
   GUI.addEventHandler(handleEvent);
