@@ -275,7 +275,7 @@ class TetraParameterSelectPage : public EncoderPage {
 
         void setup(){   
           if (!isSetup){ 
-              setEditorPage();
+              setEditorPage(&tetraEditorPageEncoders[pageIndex]);
               targetEncoderIndex = 0;
               targetPage = NULL;
               isSetup = true;
@@ -292,8 +292,9 @@ class TetraParameterSelectPage : public EncoderPage {
             GUI.put_string_at(12, encoders[3]->getName());            
         }
         
-        void setEditorPage(){ 
-            tetra_editor_page_t *page = &tetraEditorPageEncoders[pageIndex];
+        void setEditorPage(tetra_editor_page_t *page){ 
+            GUI.setLine(GUI.LINE1);
+            GUI.flash_string_fill(page->longname);          
             encoders[0] = page->encoders[0];
             encoders[1] = page->encoders[1];
             encoders[2] = page->encoders[2];
@@ -316,13 +317,27 @@ class TetraParameterSelectPage : public EncoderPage {
                 }
             }
             
-            // Pressing any Button will "Cancel" the assign and pop back to the auto encoder page
-            for (int i = Buttons.BUTTON1; i<=  Buttons.BUTTON4; i++){
-                if (EVENT_PRESSED(event, i)) {
-                    GUI.popPage(this);
-                    return true;
-                }
-            }                               
+            // 
+            // Pressing Button 2 (bottom left) displays "previous" editor page
+            if (EVENT_PRESSED(event, Buttons.BUTTON2)) {
+                pageIndex = mod(pageIndex-1, NUM_TETRA_EDITOR_PAGES);
+                setEditorPage (&tetraEditorPageEncoders[pageIndex]);
+                return true;
+            }  
+            
+            // Pressing Button 3 (bottom right) displays "next" editor page
+            if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
+                pageIndex = mod(pageIndex + 1, NUM_TETRA_EDITOR_PAGES);
+                setEditorPage (&tetraEditorPageEncoders[pageIndex]);
+                return true;
+            } 
+            
+            // Pressing Button 1 or 4 will "Cancel" the assign and pop back to the auto encoder page
+            if ((EVENT_PRESSED(event, Buttons.BUTTON1)) || (EVENT_PRESSED(event, Buttons.BUTTON4))){
+                GUI.popPage(this);
+                return true;
+            }
+                                       
             
             return false;
 
