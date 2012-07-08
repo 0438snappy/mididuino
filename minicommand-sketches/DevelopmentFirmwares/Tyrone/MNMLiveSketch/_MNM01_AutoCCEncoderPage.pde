@@ -3,6 +3,7 @@
 //#include "WProgram.h"
 #include "GUI.h"
 #include "CCHandler.h"
+#include "RecordingEncoder.hh"
 
 
 /**
@@ -17,15 +18,14 @@
  * for specific encoders
  *
  **/
-template <typename EncoderType> 
+
 class AutoCCEncoderPage : public EncoderPage, public ClockCallback {
  public:
-  EncoderType realEncoders[4];
+  MNMEncoder realEncoders[4];
   const static int RECORDING_LENGTH = 64; // recording length in 32th
   RecordingEncoder<RECORDING_LENGTH> recEncoders[4];
 
   bool muted;
-  uint8_t button1, button2, button3, button4;
   void on32Callback(uint32_t counter);
   void startRecording();
   void stopRecording();
@@ -41,26 +41,22 @@ class AutoCCEncoderPage : public EncoderPage, public ClockCallback {
 };
 
 
-template <typename EncoderType>
-void AutoCCEncoderPage<EncoderType>::setup() {
+
+void AutoCCEncoderPage::setup() {
 
   muted = false;
-  button1 = Buttons.BUTTON1;
-  button2 = Buttons.BUTTON2; 
-  button3 = Buttons.BUTTON3;
-  button4 = Buttons.BUTTON4;
   for (uint8_t i = 0; i < 4; i++) {
     realEncoders[i].setName("___");
     recEncoders[i].initRecordingEncoder(&realEncoders[i]);
     encoders[i] = &recEncoders[i];
     ccHandler.addEncoder(&realEncoders[i]);
   }
-  MidiClock.addOn32Callback(this, (midi_clock_callback_ptr_t)&AutoCCEncoderPage<EncoderType>::on32Callback);
+  MidiClock.addOn32Callback(this, (midi_clock_callback_ptr_t)&AutoCCEncoderPage::on32Callback);
   EncoderPage::setup();
 }
 
-template <typename EncoderType>
-void AutoCCEncoderPage<EncoderType>::on32Callback(uint32_t counter) {
+
+void AutoCCEncoderPage::on32Callback(uint32_t counter) {
   if (muted)
     return;
 
@@ -82,35 +78,35 @@ void AutoCCEncoderPage<EncoderType>::on32Callback(uint32_t counter) {
   }
 }
 
-template <typename EncoderType>
-void AutoCCEncoderPage<EncoderType>::startRecording() {
+
+void AutoCCEncoderPage::startRecording() {
   for (uint8_t i = 0; i < 4; i++) {
     recEncoders[i].startRecording();
   }
 }
 
-template <typename EncoderType>
-void AutoCCEncoderPage<EncoderType>::stopRecording() {
+
+void AutoCCEncoderPage::stopRecording() {
   for (uint8_t i = 0; i < 4; i++) {
     recEncoders[i].stopRecording();
   }
 }
 
-template <typename EncoderType>
-void AutoCCEncoderPage<EncoderType>::clearRecording() {
+
+void AutoCCEncoderPage::clearRecording() {
   for (uint8_t i = 0; i < 4; i++) {
     recEncoders[i].clearRecording();
   }
 }
 
-template <typename EncoderType>
-void AutoCCEncoderPage<EncoderType>::clearRecording(uint8_t i) {
+
+void AutoCCEncoderPage::clearRecording(uint8_t i) {
   recEncoders[i].clearRecording();
 }
 
 
-template <typename EncoderType>
-void AutoCCEncoderPage<EncoderType>::clearEncoder(uint8_t i) {
+
+void AutoCCEncoderPage::clearEncoder(uint8_t i) {
 	
         realEncoders[i].cc = 0;
       	realEncoders[i].channel = 0;
@@ -120,8 +116,8 @@ void AutoCCEncoderPage<EncoderType>::clearEncoder(uint8_t i) {
 }
 
 // assigns the last incoming cc in the cchandler buffer to the specified encoder
-template <typename EncoderType>
-void AutoCCEncoderPage<EncoderType>::learnEncoder(uint8_t i) {
+
+void AutoCCEncoderPage::learnEncoder(uint8_t i) {
 	  
   incoming_cc_t cc;	
   uint8_t count = ccHandler.incomingCCs.size();	
@@ -134,8 +130,8 @@ void AutoCCEncoderPage<EncoderType>::learnEncoder(uint8_t i) {
   }
 }
 
-template <typename EncoderType>
-void AutoCCEncoderPage<EncoderType>::autoLearnLast4() {
+
+void AutoCCEncoderPage::autoLearnLast4() {
   /* maps from received CC indexes to encoder indexes */
   int8_t ccAssigned[4] = { -1, -1, -1, -1 };
   /* maps from encoder indexes to last received CCs */
@@ -182,14 +178,14 @@ void AutoCCEncoderPage<EncoderType>::autoLearnLast4() {
   }
 }
 
-template <typename EncoderType>
-bool AutoCCEncoderPage<EncoderType>::handleEvent(gui_event_t *event) {
+
+bool AutoCCEncoderPage::handleEvent(gui_event_t *event) {
   /*
   *
   *  LEARN MODE FUNCTIONS - activated by pressing button 4 + something else...
   *
   */
-  if (BUTTON_UP(Buttons.BUTTON3) && BUTTON_DOWN(Buttons.BUTTON4) ) {
+  if (BUTTON_UP(Buttons.BUTTON2) && BUTTON_DOWN(Buttons.BUTTON4) ) {
     
       // Button 4 + encoder = assign last incoming CC to Encoder  
       for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
@@ -204,7 +200,7 @@ bool AutoCCEncoderPage<EncoderType>::handleEvent(gui_event_t *event) {
       }
     
       // Button 4 + Button 2 = assign last 4 incoming CCs to Encoders  
-      if (EVENT_PRESSED(event, Buttons.BUTTON2)) {
+      if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
         GUI.flash_strings_fill("AUTO LEARN", "LAST 4 CCs");
         autoLearnLast4();
         return true;
@@ -216,14 +212,14 @@ bool AutoCCEncoderPage<EncoderType>::handleEvent(gui_event_t *event) {
   *  REC MODE - toggled on/off by pressing button 3 without any other buttons
   *
   */
-  if (BUTTON_UP(Buttons.BUTTON2)) {
+  if (BUTTON_UP(Buttons.BUTTON3)) {
      if (BUTTON_UP(Buttons.BUTTON4)) {
-        if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
+        if (EVENT_PRESSED(event, Buttons.BUTTON2)) {
           GUI.flash_strings_fill("RECORD MODE ON", "");
           startRecording();
           return true;
         }
-        if (EVENT_RELEASED(event, Buttons.BUTTON3)) {
+        if (EVENT_RELEASED(event, Buttons.BUTTON2)) {
           GUI.flash_strings_fill("RECORD MODE OFF", "");
           stopRecording();
           return true;
@@ -233,12 +229,12 @@ bool AutoCCEncoderPage<EncoderType>::handleEvent(gui_event_t *event) {
   
   /*
   *
-  * CLEAR MODE FUNCTIONS - activated by pressing button 2 + something else...
+  * CLEAR MODE FUNCTIONS - activated by pressing button 3 + something else...
   *
   */
-  if (BUTTON_DOWN(Buttons.BUTTON2)) {
+  if (BUTTON_DOWN(Buttons.BUTTON3)) {
     
-      // Pressing Button2 + Encoder = Clear Encoder Recording
+      // Pressing Button3 + Encoder = Clear Encoder Recording
       for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
         if (EVENT_PRESSED(event, i)) {
             GUI.setLine(GUI.LINE1);
@@ -249,8 +245,8 @@ bool AutoCCEncoderPage<EncoderType>::handleEvent(gui_event_t *event) {
         }
       }
         
-      // Pressing Button2 + Button 3 + Encoder = Clear CC assigned to Encoder
-      if (BUTTON_DOWN(Buttons.BUTTON3)) {
+      // Pressing Button3 + Button 2 + Encoder = Clear CC assigned to Encoder
+      if (BUTTON_DOWN(Buttons.BUTTON2)) {
         for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
           if (EVENT_PRESSED(event, i)) {
             GUI.setLine(GUI.LINE1);
