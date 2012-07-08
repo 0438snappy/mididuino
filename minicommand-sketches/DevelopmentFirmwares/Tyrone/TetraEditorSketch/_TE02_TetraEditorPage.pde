@@ -31,10 +31,10 @@ tetra_editor_page_t tetraEditorPageEncoders[NUM_TETRA_EDITOR_PAGES] = {
   {"P18", "MOD1 PARAMS", {&tetraMod1SourceEncoder, &tetraMod1AmtEncoder, &tetraMod1DestinationEncoder, NULL}}, 
   {"P19", "MOD2 PARAMS", {&tetraMod2SourceEncoder, &tetraMod2AmtEncoder, &tetraMod2DestinationEncoder, NULL}}, 
   {"P20", "MOD3 PARAMS", {&tetraMod3SourceEncoder, &tetraMod3AmtEncoder, &tetraMod3DestinationEncoder, NULL}}, 
-  {"P21", "MOD4 PARAMS", {&tetraMod4SourceEncoder, &tetraMod4AmtEncoder, &tetraMod4DestinationEncoder, NULL}}, 
-  {"P22", "CONTROLLERS 1", {&tetraPressureAmtEncoder, &tetraPressureDestEncoder, &tetraVelocityAmtEncoder, &tetraVelocityDestEncoder}}, 
-  {"P23", "CONTROLLERS 2", {&tetraModWheelAmtEncoder, &tetraModWheelDestEncoder, &tetraPitchBendRangeEncoder, NULL}}, 
-  {"P24", "CLOCK & ARP", {&tetraBpmTempoEncoder, &tetraClockDivideEncoder, &tetraArpeggiatorModeEncoder, &tetraArpeggiatorOIEncoder}} 
+  {"P21", "MOD4 PARAMS", {&tetraMod4SourceEncoder, &tetraMod4AmtEncoder, &tetraMod4DestinationEncoder, NULL}}
+//  {"P22", "CONTROLLERS 1", {&tetraPressureAmtEncoder, &tetraPressureDestEncoder, &tetraVelocityAmtEncoder, &tetraVelocityDestEncoder}}, 
+//  {"P23", "CONTROLLERS 2", {&tetraModWheelAmtEncoder, &tetraModWheelDestEncoder, &tetraPitchBendRangeEncoder, NULL}}, 
+//  {"P24", "CLOCK & ARP", {&tetraBpmTempoEncoder, &tetraClockDivideEncoder, &tetraArpeggiatorModeEncoder, &tetraArpeggiatorOIEncoder}} 
 //  {"P25", "SEQ DESTINATIONS", {&tetraSeq1DestinationEncoder, &tetraSeq2DestinationEncoder, &tetraSeq3DestinationEncoder, &tetraSeq4DestinationEncoder}}, 
 //  {"P26", "SEQ1 STEP 1-4", {&tetraSeqTrk1Step1Encoder, &tetraSeqTrk1Step2Encoder, &tetraSeqTrk1Step3Encoder, &tetraSeqTrk1Step4Encoder}}, 
 //  {"P27", "SEQ1 STEP 5-8", {&tetraSeqTrk1Step5Encoder, &tetraSeqTrk1Step6Encoder, &tetraSeqTrk1Step7Encoder, &tetraSeqTrk1Step8Encoder}}, 
@@ -275,7 +275,7 @@ class TetraParameterSelectPage : public EncoderPage {
 
         void setup(){   
           if (!isSetup){ 
-              setEditorPage();
+              setEditorPage(&tetraEditorPageEncoders[pageIndex]);
               targetEncoderIndex = 0;
               targetPage = NULL;
               isSetup = true;
@@ -292,8 +292,9 @@ class TetraParameterSelectPage : public EncoderPage {
             GUI.put_string_at(12, encoders[3]->getName());            
         }
         
-        void setEditorPage(){ 
-            tetra_editor_page_t *page = &tetraEditorPageEncoders[pageIndex];
+        void setEditorPage(tetra_editor_page_t *page){ 
+            GUI.setLine(GUI.LINE1);
+            GUI.flash_string_fill(page->longname);          
             encoders[0] = page->encoders[0];
             encoders[1] = page->encoders[1];
             encoders[2] = page->encoders[2];
@@ -316,13 +317,27 @@ class TetraParameterSelectPage : public EncoderPage {
                 }
             }
             
-            // Pressing any Button will "Cancel" the assign and pop back to the auto encoder page
-            for (int i = Buttons.BUTTON1; i<=  Buttons.BUTTON4; i++){
-                if (EVENT_PRESSED(event, i)) {
-                    GUI.popPage(this);
-                    return true;
-                }
-            }                               
+            // 
+            // Pressing Button 2 (bottom left) displays "previous" editor page
+            if (EVENT_PRESSED(event, Buttons.BUTTON2)) {
+                pageIndex = mod(pageIndex-1, NUM_TETRA_EDITOR_PAGES);
+                setEditorPage (&tetraEditorPageEncoders[pageIndex]);
+                return true;
+            }  
+            
+            // Pressing Button 3 (bottom right) displays "next" editor page
+            if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
+                pageIndex = mod(pageIndex + 1, NUM_TETRA_EDITOR_PAGES);
+                setEditorPage (&tetraEditorPageEncoders[pageIndex]);
+                return true;
+            } 
+            
+            // Pressing Button 1 or 4 will "Cancel" the assign and pop back to the auto encoder page
+            if ((EVENT_PRESSED(event, Buttons.BUTTON1)) || (EVENT_PRESSED(event, Buttons.BUTTON4))){
+                GUI.popPage(this);
+                return true;
+            }
+                                       
             
             return false;
 

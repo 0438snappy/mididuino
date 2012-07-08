@@ -91,7 +91,7 @@ bool AutoNRPNEncoderPage::handleEvent(gui_event_t *event) {
   *  LEARN MODE FUNCTIONS - activated by pressing button 4 + something else...
   *
   */
-  if (BUTTON_UP(Buttons.BUTTON3) && BUTTON_DOWN(Buttons.BUTTON4) ) {
+  if (BUTTON_UP(Buttons.BUTTON2) && BUTTON_DOWN(Buttons.BUTTON4) ) {
     
       // Button 4 + encoder = display TetraEditorEncoderSelect page  (user then clicks an encoder to assign it back to this page)
       for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
@@ -99,7 +99,7 @@ bool AutoNRPNEncoderPage::handleEvent(gui_event_t *event) {
 
             tetraParameterSelectPage.targetEncoderIndex = i;
             tetraParameterSelectPage.targetPage = this;
-            tetraParameterSelectPage.setEditorPage();
+            tetraParameterSelectPage.setEditorPage(&tetraEditorPageEncoders[pageIndex]);
 
             GUI.setLine(GUI.LINE1);
             GUI.flash_string_fill("LEARN ENC NRPN");
@@ -117,14 +117,14 @@ bool AutoNRPNEncoderPage::handleEvent(gui_event_t *event) {
   *  REC MODE - toggled on/off by pressing button 3 without any other buttons
   *
   */
-  if (BUTTON_UP(Buttons.BUTTON2)) {
+  if (BUTTON_UP(Buttons.BUTTON3)) {
      if (BUTTON_UP(Buttons.BUTTON4)) {
-        if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
+        if (EVENT_PRESSED(event, Buttons.BUTTON2)) {
           GUI.flash_strings_fill("RECORD MODE ON", "");
           startRecording();
           return true;
         }
-        if (EVENT_RELEASED(event, Buttons.BUTTON3)) {
+        if (EVENT_RELEASED(event, Buttons.BUTTON2)) {
           GUI.flash_strings_fill("RECORD MODE OFF", "");
           stopRecording();
           return true;
@@ -134,12 +134,12 @@ bool AutoNRPNEncoderPage::handleEvent(gui_event_t *event) {
   
   /*
   *
-  * CLEAR MODE FUNCTIONS - activated by pressing button 2 + something else...
+  * CLEAR MODE FUNCTIONS - activated by pressing button 3 + something else...
   *
   */
-  if (BUTTON_DOWN(Buttons.BUTTON2)) {
+  if (BUTTON_DOWN(Buttons.BUTTON3)) {
     
-      // Pressing Button2 + Encoder = Clear Encoder Recording
+      // Pressing Button3 + Encoder = Clear Encoder Recording
       for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
         if (EVENT_PRESSED(event, i)) {
             GUI.setLine(GUI.LINE1);
@@ -150,8 +150,8 @@ bool AutoNRPNEncoderPage::handleEvent(gui_event_t *event) {
         }
       }
         
-      // Pressing Button2 + Button 3 + Encoder = Clear NRPN assigned to Encoder
-      if (BUTTON_DOWN(Buttons.BUTTON3)) {
+      // Pressing Button3 + Button 2 + Encoder = Clear CC assigned to Encoder
+      if (BUTTON_DOWN(Buttons.BUTTON2)) {
         for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
           if (EVENT_PRESSED(event, i)) {
             GUI.setLine(GUI.LINE1);

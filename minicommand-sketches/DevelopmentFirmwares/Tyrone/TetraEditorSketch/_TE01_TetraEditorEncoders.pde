@@ -2,7 +2,7 @@
 //#include <WProgram.h>  //Midi-Ctrl 0017
 
 #define TETRA_MIDI_CHANNEL (13 - 1) // Midi Channel 13
-#define NUM_TETRA_EDITOR_PAGES 24
+#define NUM_TETRA_EDITOR_PAGES 21
 
 
 
@@ -174,40 +174,40 @@ TetraNRPNEncoder tetraMod4DestinationEncoder(82, 76, TETRA_MIDI_CHANNEL, "DST", 
 //TetraNRPNEncoder tetraSeq2DestinationEncoder(108, 78, TETRA_MIDI_CHANNEL, "DST", "SEQ2 DESTINATION", 0, 47, 0);
 //TetraNRPNEncoder tetraSeq3DestinationEncoder(109, 79, TETRA_MIDI_CHANNEL, "DST", "SEQ3 DESTINATION", 0, 47, 0);
 //TetraNRPNEncoder tetraSeq4DestinationEncoder(110, 80, TETRA_MIDI_CHANNEL, "DST", "SEQ4 DESTINATION", 0, 47, 0);
-TetraNRPNEncoder tetraModWheelAmtEncoder(83, 81, TETRA_MIDI_CHANNEL, "AMT", "MOD WHEEL AMT", 0, 254, 0);
-TetraNRPNEncoder tetraModWheelDestEncoder(84, 82, TETRA_MIDI_CHANNEL, "DST", "MOD WHEEL DEST", 0, 47, 0);
-TetraNRPNEncoder tetraPressureAmtEncoder(85, 83, TETRA_MIDI_CHANNEL, "AMT", "PRESSURE AMT", 0, 254, 0);
-TetraNRPNEncoder tetraPressureDestEncoder(86, 84, TETRA_MIDI_CHANNEL, "DST", "PRESSURE DEST", 0, 47, 0);
-TetraNRPNEncoder tetraBreathAmtEncoder(87, 85, TETRA_MIDI_CHANNEL, "AMT", "BREATH AMT", 0, 254, 0);
-TetraNRPNEncoder tetraBreathDestEncoder(88, 86, TETRA_MIDI_CHANNEL, "DST", "BREATH DEST", 0, 47, 0);
-TetraNRPNEncoder tetraVelocityAmtEncoder(89, 87, TETRA_MIDI_CHANNEL, "AMT", "VELOCITY AMT", 0, 254, 0);
-TetraNRPNEncoder tetraVelocityDestEncoder(90, 88, TETRA_MIDI_CHANNEL, "DST", "VELOCITY DEST", 0, 47, 0);
-TetraNRPNEncoder tetraFootCtrlAmtEncoder(91, 89, TETRA_MIDI_CHANNEL, "AMT", "FOOT CTRL AMT", 0, 254, 0);
-TetraNRPNEncoder tetraFootCtrlDestEncoder(92, 90, TETRA_MIDI_CHANNEL, "DST", "FOOT CTRL DEST", 0, 47, 0);
-TetraNRPNEncoder tetraBpmTempoEncoder(101, 91, TETRA_MIDI_CHANNEL, "BPM", "BPM TEMPO", 30, 250, 0);
-TetraNRPNEncoder tetraClockDivideEncoder(102, 92, TETRA_MIDI_CHANNEL, "CLK", "CLOCK DIVIDE", 0, 12, 0);
-TetraNRPNEncoder tetraPitchBendRangeEncoder(15, 93, TETRA_MIDI_CHANNEL, "PBR", "PITCH BEND RANGE", 0, 12, 0);
-TetraNRPNEncoder tetraSeqTriggerEncoder(105, 94, TETRA_MIDI_CHANNEL, "TRG", "SEQ TRIGGER", 0, 4, 0);
-TetraNRPNEncoder tetraKeyModeEncoder(94, 95, TETRA_MIDI_CHANNEL, "KMD", "KEY MODE", 0, 5, 0);
+//TetraNRPNEncoder tetraModWheelAmtEncoder(83, 81, TETRA_MIDI_CHANNEL, "AMT", "MOD WHEEL AMT", 0, 254, 0);
+//TetraNRPNEncoder tetraModWheelDestEncoder(84, 82, TETRA_MIDI_CHANNEL, "DST", "MOD WHEEL DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraPressureAmtEncoder(85, 83, TETRA_MIDI_CHANNEL, "AMT", "PRESSURE AMT", 0, 254, 0);
+//TetraNRPNEncoder tetraPressureDestEncoder(86, 84, TETRA_MIDI_CHANNEL, "DST", "PRESSURE DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraBreathAmtEncoder(87, 85, TETRA_MIDI_CHANNEL, "AMT", "BREATH AMT", 0, 254, 0);
+//TetraNRPNEncoder tetraBreathDestEncoder(88, 86, TETRA_MIDI_CHANNEL, "DST", "BREATH DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraVelocityAmtEncoder(89, 87, TETRA_MIDI_CHANNEL, "AMT", "VELOCITY AMT", 0, 254, 0);
+//TetraNRPNEncoder tetraVelocityDestEncoder(90, 88, TETRA_MIDI_CHANNEL, "DST", "VELOCITY DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraFootCtrlAmtEncoder(91, 89, TETRA_MIDI_CHANNEL, "AMT", "FOOT CTRL AMT", 0, 254, 0);
+//TetraNRPNEncoder tetraFootCtrlDestEncoder(92, 90, TETRA_MIDI_CHANNEL, "DST", "FOOT CTRL DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraBpmTempoEncoder(101, 91, TETRA_MIDI_CHANNEL, "BPM", "BPM TEMPO", 30, 250, 0);
+//TetraNRPNEncoder tetraClockDivideEncoder(102, 92, TETRA_MIDI_CHANNEL, "CLK", "CLOCK DIVIDE", 0, 12, 0);
+//TetraNRPNEncoder tetraPitchBendRangeEncoder(15, 93, TETRA_MIDI_CHANNEL, "PBR", "PITCH BEND RANGE", 0, 12, 0);
+//TetraNRPNEncoder tetraSeqTriggerEncoder(105, 94, TETRA_MIDI_CHANNEL, "TRG", "SEQ TRIGGER", 0, 4, 0);
+//TetraNRPNEncoder tetraKeyModeEncoder(94, 95, TETRA_MIDI_CHANNEL, "KMD", "KEY MODE", 0, 5, 0);
 TetraNRPNEncoder tetraUnisonModeEncoder(93, 96, TETRA_MIDI_CHANNEL, "UMD", "UNISON MODE", 0, 4, 0);
-TetraNRPNEncoder tetraArpeggiatorModeEncoder(103, 97, TETRA_MIDI_CHANNEL, "AMD", "ARPEGGIATOR MODE", 0, 3, 0);
+//TetraNRPNEncoder tetraArpeggiatorModeEncoder(103, 97, TETRA_MIDI_CHANNEL, "AMD", "ARPEGGIATOR MODE", 0, 3, 0);
 TetraNRPNEncoder tetraEnv3RepeatModeEncoder(70, 98, TETRA_MIDI_CHANNEL, "EMD", "ENV3 REPEAT MODE", 0, 1, 0);
 TetraNRPNEncoder tetraUnisonOnOffEncoder(95, 99, TETRA_MIDI_CHANNEL, "UNI", "UNISON ON/OFF", 0, 1, 0);
-TetraNRPNEncoder tetraArpeggiatorOIEncoder(104, 100, TETRA_MIDI_CHANNEL, "ARP", "ARPEGGIATOR O-I", 0, 1, 0);
-TetraNRPNEncoder tetraGatedSeqOnOffEncoder(106, 101, TETRA_MIDI_CHANNEL, "GAT", "GATED SEQ ON/OFF", 0, 1, 0);
-TetraNRPNEncoder tetraAssignParam1Encoder(111, 105, TETRA_MIDI_CHANNEL, "P1", "ASSIGN PARAM 1", 0, 183, 0);
-TetraNRPNEncoder tetraAssignParam2Encoder(112, 106, TETRA_MIDI_CHANNEL, "P2", "ASSIGN PARAM 2", 0, 183, 0);
-TetraNRPNEncoder tetraAssignParam3Encoder(113, 107, TETRA_MIDI_CHANNEL, "P3", "ASSIGN PARAM 3", 0, 183, 0);
-TetraNRPNEncoder tetraAssignParam4Encoder(114, 108, TETRA_MIDI_CHANNEL, "P4", "ASSIGN PARAM 4", 0, 183, 0);
+//TetraNRPNEncoder tetraArpeggiatorOIEncoder(104, 100, TETRA_MIDI_CHANNEL, "ARP", "ARPEGGIATOR O-I", 0, 1, 0);
+//TetraNRPNEncoder tetraGatedSeqOnOffEncoder(106, 101, TETRA_MIDI_CHANNEL, "GAT", "GATED SEQ ON/OFF", 0, 1, 0);
+//TetraNRPNEncoder tetraAssignParam1Encoder(111, 105, TETRA_MIDI_CHANNEL, "P1", "ASSIGN PARAM 1", 0, 183, 0);
+//TetraNRPNEncoder tetraAssignParam2Encoder(112, 106, TETRA_MIDI_CHANNEL, "P2", "ASSIGN PARAM 2", 0, 183, 0);
+//TetraNRPNEncoder tetraAssignParam3Encoder(113, 107, TETRA_MIDI_CHANNEL, "P3", "ASSIGN PARAM 3", 0, 183, 0);
+//TetraNRPNEncoder tetraAssignParam4Encoder(114, 108, TETRA_MIDI_CHANNEL, "P4", "ASSIGN PARAM 4", 0, 183, 0);
 TetraNRPNEncoder tetraFeedbackGainEncoder(19, 110, TETRA_MIDI_CHANNEL, "FBG", "FEEDBACK GAIN", 0, 127, 0);
-TetraNRPNEncoder tetraPushItNoteEncoder(96, 111, TETRA_MIDI_CHANNEL, "NOT", "PUSH IT NOTE", 0, 127, 0);
-TetraNRPNEncoder tetraPushItVelEncoder(97, 112, TETRA_MIDI_CHANNEL, "VEL", "PUSH IT VEL", 0, 127, 0);
-TetraNRPNEncoder tetraPushItModeEncoder(98, 113, TETRA_MIDI_CHANNEL, "MOD", "PUSH IT MODE", 0, 1, 0);
+//TetraNRPNEncoder tetraPushItNoteEncoder(96, 111, TETRA_MIDI_CHANNEL, "NOT", "PUSH IT NOTE", 0, 127, 0);
+//TetraNRPNEncoder tetraPushItVelEncoder(97, 112, TETRA_MIDI_CHANNEL, "VEL", "PUSH IT VEL", 0, 127, 0);
+//TetraNRPNEncoder tetraPushItModeEncoder(98, 113, TETRA_MIDI_CHANNEL, "MOD", "PUSH IT MODE", 0, 1, 0);
 TetraNRPNEncoder tetraSubOsc1LevelEncoder(5, 114, TETRA_MIDI_CHANNEL, "SB1", "SUB OSC1 LEVEL", 0, 127, 0);
 TetraNRPNEncoder tetraSubOsc2LevelEncoder(11, 115, TETRA_MIDI_CHANNEL, "SB2", "SUB OSC2 LEVEL", 0, 127, 0);
 TetraNRPNEncoder tetraFeedbackVolEncoder(18, 116, TETRA_MIDI_CHANNEL, "FBV", "FEEDBACK VOL", 0, 127, 0);
-TetraNRPNEncoder tetraSplitPointEncoder(99, 118, TETRA_MIDI_CHANNEL, "SPL", "SPLIT POINT", 0, 127, 0);
-TetraNRPNEncoder tetraKeyboardModeEncoder(100, 119, TETRA_MIDI_CHANNEL, "KMD", "KEYBOARD MODE", 0, 2, 0);
+//TetraNRPNEncoder tetraSplitPointEncoder(99, 118, TETRA_MIDI_CHANNEL, "SPL", "SPLIT POINT", 0, 127, 0);
+//TetraNRPNEncoder tetraKeyboardModeEncoder(100, 119, TETRA_MIDI_CHANNEL, "KMD", "KEYBOARD MODE", 0, 2, 0);
 
 
 //
