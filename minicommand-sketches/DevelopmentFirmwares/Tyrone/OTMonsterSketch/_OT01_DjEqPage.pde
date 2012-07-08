@@ -2,6 +2,7 @@
 #define MD_THRU_MIDI_CHANNEL (6 - 1)  // OT Track / Midi Channel 6 
 #define MNM_THRU_MIDI_CHANNEL (7 - 1) // OT Track / Midi Channel 7 
 #define TETRA_MIDI_CHANNEL (12 - 1) // Midi Channel 12
+#define AUTO_TRACK_MIDI_CHANNEL (11 - 1) // Midi Channel 11
 
 #define CC_EQ_LOW_GAIN 37  //FX 1 PARAM 4
 #define CC_EQ_HI_GAIN 39  //FX 1 PARAM 6

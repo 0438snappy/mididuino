@@ -1,5 +1,5 @@
-//#include <Platform.h>
-#include <WProgram.h>
+#include <Platform.h>
+//#include <WProgram.h>
 #include <CCHandler.h>
 
 class OctatrackLiveSketch : public Sketch{  

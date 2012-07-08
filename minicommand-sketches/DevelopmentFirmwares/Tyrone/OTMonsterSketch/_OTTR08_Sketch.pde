@@ -1,8 +1,7 @@
-//#include <Platform.h>
-#include <WProgram.h>
-#include <CCHandler.h>
+#include <Platform.h>
+//#include <WProgram.h>
 
-class OctatrackTransposeSketch : public Sketch{  
+class OctatrackTransposeSketch : public Sketch, public MidiCallback{  
 
     public:
     bool muted;
@@ -38,6 +37,9 @@ class OctatrackTransposeSketch : public Sketch{
     void setup() {
        muted = false;
        octatrackTranspose.setup();
+       Midi.addOnNoteOnCallback(this, (midi_callback_ptr_t)&OctatrackTransposeSketch::on3ByteCallback);
+       Midi.addOnNoteOffCallback(this, (midi_callback_ptr_t)&OctatrackTransposeSketch::on3ByteCallback);       
+       Midi.addOnControlChangeCallback(this, (midi_callback_ptr_t)&OctatrackTransposeSketch::on3ByteCallback);              
 //       setupPages();
 //       setupSwitchPage();
     }
@@ -93,7 +95,17 @@ class OctatrackTransposeSketch : public Sketch{
        return false;
     }   
     
-    
+  void on3ByteCallback(uint8_t *msg) {
+    if (MIDI_VOICE_CHANNEL(msg[0]==AUTO_TRACK_MIDI_CHANNEL)) {
+        MidiUart.sendMessage(msg[0], msg[1], msg[2]);
+    }
+  }
+
+  void on2ByteCallback(uint8_t *msg) {
+    if (MIDI_VOICE_CHANNEL(msg[0]==AUTO_TRACK_MIDI_CHANNEL)) {    
+        MidiUart.sendMessage(msg[0], msg[1]);
+    }
+  }    
 
 };
 
