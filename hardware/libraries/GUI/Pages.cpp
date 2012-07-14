@@ -173,7 +173,7 @@ void ScrollSwitchPage::addPage(Page *page) {
 void ScrollSwitchPage::display() {
   if (redisplay) {
     GUI.setLine(GUI.LINE1);
-    GUI.put_p_string(PSTR("SELECT PAGE:"));
+    GUI.put_string_at_fill(0, name);
     GUI.setLine(GUI.LINE2);
     Page *page = pages.arr[pageEncoder.getValue()];
     if (page != NULL) {
