@@ -8,7 +8,7 @@
 #define INTERNAL_TRACK_6_MIDI_CHANNEL (6 - 1)  // OT Track / Midi Channel 6
 #define INTERNAL_TRACK_7_MIDI_CHANNEL (7 - 1)  // OT Track / Midi Channel 7
 #define INTERNAL_TRACK_8_MIDI_CHANNEL (8 - 1)  // OT Track / Midi Channel 8
-#define OCTATRACK_TRANSPOSE_MIDI_CHANNEL (16 - 1)  // Midi Channel 15
+#define OCTATRACK_TRANSPOSE_MIDI_CHANNEL (16 - 1)  // Midi Channel 16
 #define MIDI_TRACK_1_MIDI_CHANNEL (5 - 1)  // MIDI Track 1 / Midi Channel 5  (MNM-1)
 #define MIDI_TRACK_2_MIDI_CHANNEL (6 - 1)  // MIDI Track 2 / Midi Channel 6  (MNM-2)
 #define MIDI_TRACK_3_MIDI_CHANNEL (7 - 1)  // MIDI Track 3 / Midi Channel 7  (MNM-3)
@@ -44,7 +44,7 @@ class OctatrackTransposeClass: public MidiCallback{
             setupTransposeTrackEnabled();
             setupTransposeEnabled();
             setupMidiChannels();
-            Midi.addOnNoteOnCallback(this, (midi_callback_ptr_t)&OctatrackTransposeClass::onNoteOn);
+            Midi2.addOnNoteOnCallback(this, (midi_callback_ptr_t)&OctatrackTransposeClass::onNoteOn);
         }      
         
         void setupOffset(){
