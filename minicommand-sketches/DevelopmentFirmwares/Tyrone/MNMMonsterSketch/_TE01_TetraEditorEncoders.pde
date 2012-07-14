@@ -1,7 +1,7 @@
 #include <Platform.h>  //Midi-Ctrl 0018
 //#include <WProgram.h>  //Midi-Ctrl 0017
 
-#define TETRA_MIDI_CHANNEL (13 - 1) // Midi Channel 13
+#define TETRA_MIDI_CHANNEL (15 - 1) // Midi Channel 15
 #define NUM_TETRA_EDITOR_PAGES 21
 
 
