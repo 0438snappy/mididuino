@@ -1,31 +1,4 @@
-class DebugPage : public EncoderPage{
-public:
-    // Debug Encoder Page
-    RangeEncoder debugParam1, debugParam2, debugParam3, debugParam4;
-    
-    DebugPage() : 
-    debugParam1(0, 127, "***"),
-    debugParam2(0, 127, "***"), 
-    debugParam3(0, 127, "***"),
-    debugParam4(0, 127, "***") 
-    {
-        encoders[0] = &debugParam1;
-        encoders[1] = &debugParam2;
-        encoders[2] = &debugParam3;
-        encoders[3] = &debugParam4;  
-    }   
-    
-//    debugPage.debugParam1.setName(" i ");
-//    debugPage.debugParam1.setValue(i);    
-//    debugPage.debugParam2.setName("NUM");
-//    debugPage.debugParam2.setValue(sliceNumber);                     
-//    debugPage.debugParam3.setName("ST");
-//    debugPage.debugParam3.setValue(sliceStartValue);                      
-//    debugPage.debugParam4.setName("END");
-//    debugPage.debugParam4.setValue(sliceEndValue);                      
-//    debugPage.update();    
-};
-DebugPage debugPage;
+
 
 #define INTERNAL_TRACK_1_MIDI_CHANNEL (1 - 1)  // OT Track / Midi Channel 1
 #define INTERNAL_TRACK_2_MIDI_CHANNEL (2 - 1)  // OT Track / Midi Channel 2
@@ -35,7 +8,7 @@ DebugPage debugPage;
 #define INTERNAL_TRACK_6_MIDI_CHANNEL (6 - 1)  // OT Track / Midi Channel 6
 #define INTERNAL_TRACK_7_MIDI_CHANNEL (7 - 1)  // OT Track / Midi Channel 7
 #define INTERNAL_TRACK_8_MIDI_CHANNEL (8 - 1)  // OT Track / Midi Channel 8
-#define OCTATRACK_TRANSPOSE_MIDI_CHANNEL (15 - 1)  // Midi Channel 15
+#define OCTATRACK_TRANSPOSE_MIDI_CHANNEL (16 - 1)  // Midi Channel 15
 #define MIDI_TRACK_1_MIDI_CHANNEL (5 - 1)  // MIDI Track 1 / Midi Channel 5  (MNM-1)
 #define MIDI_TRACK_2_MIDI_CHANNEL (6 - 1)  // MIDI Track 2 / Midi Channel 6  (MNM-2)
 #define MIDI_TRACK_3_MIDI_CHANNEL (7 - 1)  // MIDI Track 3 / Midi Channel 7  (MNM-3)
@@ -126,7 +99,7 @@ class OctatrackTransposeClass: public MidiCallback{
             transposeTrackEnabled[MIDI_TRACKS][3] = true;    
             transposeTrackEnabled[MIDI_TRACKS][4] = true;    
             transposeTrackEnabled[MIDI_TRACKS][5] = true;    
-            transposeTrackEnabled[MIDI_TRACKS][6] = false;    
+            transposeTrackEnabled[MIDI_TRACKS][6] = true;    
             transposeTrackEnabled[MIDI_TRACKS][7] = true;  //Track 8            
         }
         
@@ -161,8 +134,8 @@ class OctatrackTransposeClass: public MidiCallback{
             if (MIDI_VOICE_CHANNEL(msg[0]) == OCTATRACK_TRANSPOSE_MIDI_CHANNEL){
                 doTranspose(noteNumber);                          
             } 
-            
-            // Echo Not required when using the MOTU MTP AV USB            
+
+            // Echo Not required when using the MOTU MTP AV USB
 //            else {              
 //                // Echo the note out on the same midi channel
 //                MidiUart.sendNoteOn(MIDI_VOICE_CHANNEL(msg[0]), msg[1], msg[2]);
@@ -186,16 +159,6 @@ class OctatrackTransposeClass: public MidiCallback{
                         baseNoteNumber = rawNoteNumber + offset[trackType][trackNumber];
                         scaledNoteNumber = baseNoteNumber % 24; 
                          
-//                        debugPage.debugParam1.setName("BAS");
-//                        debugPage.debugParam1.setValue(baseNoteNumber);    
-//                        debugPage.debugParam2.setName("SCL");
-//                        debugPage.debugParam2.setValue(scaledNoteNumber);    
-//                        debugPage.debugParam3.setName("CHN");
-//                        debugPage.debugParam3.setValue(midiChannels[MIDI_TRACKS][0]);                
-//                        debugPage.debugParam4.setName("CC");
-//                        debugPage.debugParam4.setValue(transposeCCs[MIDI_TRACKS]);    
-                       
-            
                         // FOR INTERNAL TRACKS
                        if ((baseNoteNumber == 24) || (baseNoteNumber == 72) || (baseNoteNumber == 120)){
                            // Hack to allow transpose up by one full octave.  Novation Remote must be set to oct range -4, 0 or +4 to work properly.

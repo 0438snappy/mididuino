@@ -22,7 +22,6 @@ class TransposeConfigPage : public EncoderPage {
 	    encoders[1] = &trackTransposeEnabledEncoder;
 	    encoders[2] = &offsetEncoder;
             trackType = _trackType;
-//	    encoders[3] = &debugParam1;
 	}
 
 	virtual void loop() {
