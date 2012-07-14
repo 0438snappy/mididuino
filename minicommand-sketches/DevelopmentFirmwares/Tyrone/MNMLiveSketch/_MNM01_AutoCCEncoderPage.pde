@@ -110,7 +110,9 @@ void AutoCCEncoderPage::clearEncoder(uint8_t i) {
 	
         realEncoders[i].cc = 0;
       	realEncoders[i].channel = 0;
-      	realEncoders[i].initMNMEncoder(0, 0, "___", 0);
+      	realEncoders[i].setName("___");
+      	realEncoders[i].setValue(0);      
+        GUI.redisplay();
       	ccHandler.incomingCCs.clear();
         recEncoders[i].clearRecording();
 }
