@@ -2,26 +2,27 @@ class TransposeConfigPage : public EncoderPage {
 
   public: 
 	RangeEncoder trackSelectEncoder, offsetEncoder;
+	EnumEncoder transposeModeEncoder;
         BoolEncoder trackTransposeEnabledEncoder;
         OctatrackTransposeClass *octatrackTranspose;
-        uint8_t trackType, trackIndex;
+        int trackType, trackIndex;
         bool updateAllTracksMode;
-   
+        static const char *trackTypeNames[2];
+           
         TransposeConfigPage
         (
-            OctatrackTransposeClass *_octatrackTranspose, 
-            uint8_t _trackType 
+            OctatrackTransposeClass *_octatrackTranspose
         ):
             octatrackTranspose(_octatrackTranspose),       
-            trackType(_trackType), 
             trackSelectEncoder(8, 1, "TRK", 1), 
             trackTransposeEnabledEncoder("TRN", octatrackTranspose->transposeTrackEnabled[trackType][trackIndex]),            
-            offsetEncoder(12, -12, "OFS", 0)  
+            offsetEncoder(12, -12, "OFS", 0),
+            transposeModeEncoder(trackTypeNames, countof(trackTypeNames), "TYP")
         {
-	    encoders[0] = &trackSelectEncoder;
-	    encoders[1] = &trackTransposeEnabledEncoder;
-	    encoders[2] = &offsetEncoder;
-            trackType = _trackType;
+	    encoders[0] = &transposeModeEncoder;          
+	    encoders[1] = &trackSelectEncoder;
+	    encoders[2] = &trackTransposeEnabledEncoder;
+	    encoders[3] = &offsetEncoder;
 	}
 
 	virtual void loop() {
@@ -51,12 +52,19 @@ class TransposeConfigPage : public EncoderPage {
                     octatrackTranspose->setOffset(trackType, trackIndex, offsetEncoder.getValue());    
                 }
 	    }
+            if (transposeModeEncoder.hasChanged()) {
+                trackType = transposeModeEncoder.getValue();
+                octatrackTranspose->setTransposeMode(trackType); 
+                updateEncoders();
+            }
 	}
 
         void setup(){         
             updateAllTracksMode = false;
-            trackIndex = (trackSelectEncoder.getValue() - 1);       
-            updateEncoders();                           
+            trackIndex = (trackSelectEncoder.getValue() - 1);           
+            trackType = transposeModeEncoder.getValue();
+            octatrackTranspose->setTransposeMode(trackType); 
+            updateEncoders();           
         }        
         
         void updateEncoders(){
@@ -89,4 +97,8 @@ class TransposeConfigPage : public EncoderPage {
 
 };
 
+const char *TransposeConfigPage::trackTypeNames[2] = {
+  "INT",           // INTERNAL_TRACKS
+  "MID"            // MIDI_TRACKS
+};   
 

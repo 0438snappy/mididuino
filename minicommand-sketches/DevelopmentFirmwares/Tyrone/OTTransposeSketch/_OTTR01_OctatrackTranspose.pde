@@ -9,14 +9,14 @@
 #define INTERNAL_TRACK_7_MIDI_CHANNEL (7 - 1)  // OT Track / Midi Channel 7
 #define INTERNAL_TRACK_8_MIDI_CHANNEL (8 - 1)  // OT Track / Midi Channel 8
 #define OCTATRACK_TRANSPOSE_MIDI_CHANNEL (16 - 1)  // Midi Channel 16
-#define MIDI_TRACK_1_MIDI_CHANNEL (5 - 1)  // MIDI Track 1 / Midi Channel 5  (MNM-1)
-#define MIDI_TRACK_2_MIDI_CHANNEL (6 - 1)  // MIDI Track 2 / Midi Channel 6  (MNM-2)
-#define MIDI_TRACK_3_MIDI_CHANNEL (7 - 1)  // MIDI Track 3 / Midi Channel 7  (MNM-3)
-#define MIDI_TRACK_4_MIDI_CHANNEL (8 - 1)  // MIDI Track 4 / Midi Channel 8  (MNM-4)
-#define MIDI_TRACK_5_MIDI_CHANNEL (9 - 1)  // MIDI Track 5 / Midi Channel 9  (MNM-5)
-#define MIDI_TRACK_6_MIDI_CHANNEL (10 - 1)  // MIDI Track 6 / Midi Channel 10  (MNM-6)
-#define MIDI_TRACK_7_MIDI_CHANNEL (11 - 1)  // MIDI Track 7 / Midi Channel 11  (MNM-MULTI ENV)
-#define MIDI_TRACK_8_MIDI_CHANNEL (13 - 1)  // MIDI Track 8 / Midi Channel 13  (TETRA)
+#define MIDI_TRACK_1_MIDI_CHANNEL (8 - 1)  // MIDI Track 1 / Midi Channel 9  (MNM-1)
+#define MIDI_TRACK_2_MIDI_CHANNEL (10 - 1)  // MIDI Track 2 / Midi Channel 10  (MNM-2)
+#define MIDI_TRACK_3_MIDI_CHANNEL (11 - 1)  // MIDI Track 3 / Midi Channel 11  (MNM-3)
+#define MIDI_TRACK_4_MIDI_CHANNEL (12 - 1)  // MIDI Track 4 / Midi Channel 12  (MNM-4 - MNM-6)
+#define MIDI_TRACK_5_MIDI_CHANNEL (15 - 1)  // MIDI Track 5 / Midi Channel 15  (TETRA)
+#define MIDI_TRACK_6_MIDI_CHANNEL (15 - 1)  // MIDI Track 6 / Midi Channel 15  (TETRA)
+#define MIDI_TRACK_7_MIDI_CHANNEL (15 - 1)  // MIDI Track 7 / Midi Channel 15  (TETRA)
+#define MIDI_TRACK_8_MIDI_CHANNEL (15 - 1)  // MIDI Track 8 / Midi Channel 15  (TETRA)
 #define CC_TRANSPOSE_INTERNAL_TRACK 16  //Playback param 1
 #define CC_TRANSPOSE_MIDI_TRACK 22  //Arpeggiator param 1
 #define INTERNAL_TRACKS 0  //Array index
@@ -30,7 +30,8 @@ class OctatrackTransposeClass: public MidiCallback{
         uint8_t transposeCCs[2];
         uint8_t midiChannels[2][8];
         uint8_t transposeTrackEnabled[2][8];
-        bool transposeEnabled[2];
+        bool transposeEnabled;
+        int transposeMode;
    
         OctatrackTransposeClass
         (
@@ -42,7 +43,7 @@ class OctatrackTransposeClass: public MidiCallback{
             setupOffset();   
             setupTransposeCCs();  
             setupTransposeTrackEnabled();
-            setupTransposeEnabled();
+            setTransposeEnabled(true);
             setupMidiChannels();
             Midi2.addOnNoteOnCallback(this, (midi_callback_ptr_t)&OctatrackTransposeClass::onNoteOn);
         }      
@@ -60,25 +61,32 @@ class OctatrackTransposeClass: public MidiCallback{
             transposeCCs[MIDI_TRACKS] = CC_TRANSPOSE_MIDI_TRACK;
         }
         
-        void setupTransposeEnabled(){
-            transposeEnabled[INTERNAL_TRACKS] = true;
-            transposeEnabled[MIDI_TRACKS] = true;
+        void setTransposeEnabled(bool _value){
+            transposeEnabled = _value;            
         }
         
-        void setTransposeTrackEnabled(uint8_t _trackType, uint8_t _trackNumber, bool _value){
-            transposeTrackEnabled[_trackType][_trackNumber] = _value;  
+        void setTransposeTrackEnabled(int _transposeMode, int _trackNumber, bool _value){
+            transposeTrackEnabled[_transposeMode][_trackNumber] = _value;  
         }
         
-        void setOffset(uint8_t _trackType, uint8_t _trackNumber, int _value){
-            offset[_trackType][_trackNumber] = _value;  
-        }        
-        
-        bool getTransposeTrackEnabled(uint8_t _trackType, uint8_t _trackNumber){
-            return transposeTrackEnabled[_trackType][_trackNumber];  
+        void setOffset(int _transposeMode, int _trackNumber, int _value){
+            offset[_transposeMode][_trackNumber] = _value;  
+//            GUI.setLine(GUI.LINE1);
+//            GUI.flash_printf_fill ("IN %b %b %b", _transposeMode, _trackNumber, _value);               
+//            GUI.setLine(GUI.LINE2);
+//            GUI.flash_printf_fill("STORED %b", offset[_transposeMode][_trackNumber]);            
+        }      
+      
+        void setTransposeMode (int _value){
+            transposeMode = _value;
         }
         
-        int getOffset(uint8_t _trackType, uint8_t _trackNumber){
-            return offset[_trackType][_trackNumber];  
+        bool getTransposeTrackEnabled(uint8_t _transposeMode, uint8_t _trackNumber){
+            return transposeTrackEnabled[_transposeMode][_trackNumber];  
+        }
+        
+        int getOffset(uint8_t _transposeMode, uint8_t _trackNumber){
+            return offset[_transposeMode][_trackNumber];  
         }        
       
         void setupTransposeTrackEnabled(){
@@ -127,12 +135,9 @@ class OctatrackTransposeClass: public MidiCallback{
         
         
         void onNoteOn(uint8_t *msg) {
-            
-            uint8_t noteNumber = msg[1];
-            uint8_t noteValue = msg[2];
         
-            if (MIDI_VOICE_CHANNEL(msg[0]) == OCTATRACK_TRANSPOSE_MIDI_CHANNEL){
-                doTranspose(noteNumber);                          
+            if (transposeEnabled && MIDI_VOICE_CHANNEL(msg[0]) == OCTATRACK_TRANSPOSE_MIDI_CHANNEL){
+                doTranspose(msg[1]);                          
             } 
 
             // Echo Not required when using the MOTU MTP AV USB
@@ -147,44 +152,46 @@ class OctatrackTransposeClass: public MidiCallback{
           
             uint8_t baseNoteNumber, scaledNoteNumber;
           
-//            // TODO: FOR MIDI TRACKS (when Elektron enable in the OT OS)
-//            for (int trackType=INTERNAL_TRACKS; trackType<=MIDI_TRACKS; trackType++){
-  
-                int trackType=INTERNAL_TRACKS;            
-    
-                for (int trackNumber=0; trackNumber<8; trackNumber++){
+                for (int trackNumber = 0; trackNumber < 8; trackNumber++){
                   
-                    if(transposeTrackEnabled[trackType][trackNumber]){
+                    if(transposeTrackEnabled[transposeMode][trackNumber]){
                         
-                        baseNoteNumber = rawNoteNumber + offset[trackType][trackNumber];
+                        baseNoteNumber = rawNoteNumber + offset[transposeMode][trackNumber];
                         scaledNoteNumber = baseNoteNumber % 24; 
                          
-                        // FOR INTERNAL TRACKS
-                       if ((baseNoteNumber == 24) || (baseNoteNumber == 72) || (baseNoteNumber == 120)){
-                           // Hack to allow transpose up by one full octave.  Novation Remote must be set to oct range -4, 0 or +4 to work properly.
-                           MidiUart.sendCC(midiChannels[trackType][trackNumber], transposeCCs[trackType], 127);    
-                       } else if (scaledNoteNumber == 12){
-                           MidiUart.sendCC(midiChannels[trackType][trackNumber], transposeCCs[trackType], 64);    
-                       }  else if (scaledNoteNumber == 0){
-                           MidiUart.sendCC(midiChannels[trackType][trackNumber], transposeCCs[trackType], 0);    
-                       }  else {
-                           MidiUart.sendCC(midiChannels[trackType][trackNumber], transposeCCs[trackType], (scaledNoteNumber * 5) + 4);    
-                       }             
+//                        GUI.setLine(GUI.LINE1);
+//                        GUI.flash_printf_fill ("%b %b %b", transposeMode, rawNoteNumber, offset[transposeMode][trackNumber]);               
+//                        GUI.setLine(GUI.LINE2);
+//                        GUI.flash_printf_fill("%b %b", baseNoteNumber, scaledNoteNumber);            
+//                         
+                         
+                       if (transposeMode == INTERNAL_TRACKS){                           
+                            // FOR INTERNAL TRACKS
+                           if ((baseNoteNumber == 24) || (baseNoteNumber == 72) || (baseNoteNumber == 120)){
+                               // Hack to allow transpose up by one full octave.  Novation Remote must be set to oct range -4, 0 or +4 to work properly.
+                               MidiUart.sendCC(midiChannels[transposeMode][trackNumber], transposeCCs[transposeMode], 127);    
+                           } else if (scaledNoteNumber == 12){
+                               MidiUart.sendCC(midiChannels[transposeMode][trackNumber], transposeCCs[transposeMode], 64);    
+                           }  else if (scaledNoteNumber == 0){
+                               MidiUart.sendCC(midiChannels[transposeMode][trackNumber], transposeCCs[transposeMode], 0);    
+                           }  else {
+                               MidiUart.sendCC(midiChannels[transposeMode][trackNumber], transposeCCs[transposeMode], (scaledNoteNumber * 5) + 4);    
+                           }             
             
-//                       // TODO: FOR MIDI TRACKS
-//                       if ((baseNoteNumber == 24) || (baseNoteNumber == 72) || (baseNoteNumber == 120)){
-//                           // Hack to allow transpose up by one full octave.  Novation Remote must be set to oct range -4, 0 or +4 to work properly.
-//                           MidiUart.sendCC(midiChannels[MIDI_TRACKS][0], transposeCCs[MIDI_TRACKS], 76);    
-//                       } else {
-//                           MidiUart.sendCC(midiChannels[MIDI_TRACKS][0], transposeCCs[MIDI_TRACKS], (scaledNoteNumber + 52));    
-//                       }                    
+                       } else {
+                           // FOR MIDI TRACKS
+                           if ((baseNoteNumber == 24) || (baseNoteNumber == 72) || (baseNoteNumber == 120)){
+                               // Hack to allow transpose up by one full octave.  Novation Remote must be set to oct range -4, 0 or +4 to work properly.
+                               MidiUart.sendCC(midiChannels[transposeMode][trackNumber], transposeCCs[transposeMode], 76);    
+                           } else {
+                               MidiUart.sendCC(midiChannels[transposeMode][trackNumber], transposeCCs[transposeMode], (scaledNoteNumber + 52));    
+                           }     
+
+                       }
                     }        
                     
-                }
-//            }         
+                }       
           
-                 
-
-        }           
+            }       
 
 };

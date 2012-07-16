@@ -6,10 +6,10 @@ class OctatrackTransposeSketch : public Sketch, public MidiCallback{
     public:
     bool muted;
     OctatrackTransposeClass octatrackTranspose;
-    TransposeConfigPage internalTrackConfigPage;
+    TransposeConfigPage transposeConfigPage;
     
     OctatrackTransposeSketch() : 
-    internalTrackConfigPage(&octatrackTranspose, INTERNAL_TRACKS)
+    transposeConfigPage(&octatrackTranspose)
     {
     }  
        
@@ -28,7 +28,7 @@ class OctatrackTransposeSketch : public Sketch, public MidiCallback{
         
     virtual void show() {
         if (currentPage() == NULL){
-            setPage(&internalTrackConfigPage);
+            setPage(&transposeConfigPage);
         }
     }   
     
@@ -40,18 +40,17 @@ class OctatrackTransposeSketch : public Sketch, public MidiCallback{
           muted = !muted;
           if (muted) {
               GUI.flash_strings_fill("OT TRANSPOSE:", "MUTED");
+              octatrackTranspose.setTransposeEnabled(false);
           } else {
               GUI.flash_strings_fill("OT TRANSPOSE:", "UNMUTED");
+              octatrackTranspose.setTransposeEnabled(true);              
           }
       }
     }  
   
     virtual Page *getPage(uint8_t i) {
       if (i == 0) {
-        return &internalTrackConfigPage;
-//      } 
-//      if (i == 1) {
-//        return &midiTrackConfigPage;
+        return &transposeConfigPage;
       } else {
         return NULL;
       }
