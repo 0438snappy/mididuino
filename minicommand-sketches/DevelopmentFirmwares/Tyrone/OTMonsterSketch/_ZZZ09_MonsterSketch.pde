@@ -2,16 +2,17 @@
 //  TOP LEVEL SKETCH
 //
 #include <MidiClockPage.h>
-#include <MidiEuclidSketch.h>
+//#include <MidiEuclidSketch.h>
 OctatrackLiveSketch sketch;
 OctatrackTransposeSketch sketch2;
-PitchEuclidSketch sketch3;
-SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, &sketch3, NULL);
+//PitchEuclidSketch sketch3;
+//SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, &sketch3, NULL);
+SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, NULL, NULL);
 
 void setup() {
   sketch.setupMonster(true); 
   sketch2.setupMonster(true);   
-  sketch3.setupMonster(true);
+//  sketch3.setupMonster(true);
   GUI.setSketch(&_defaultSketch);
   GUI.setPage(&sketchSwitchPage);
   GUI.addEventHandler(handleEvent);
