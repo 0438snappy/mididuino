@@ -32,6 +32,8 @@
 #define OT_FX2_PARAM5 44
 #define OT_FX2_PARAM6 45
 
+#define OT_RECORDER_ARM 53
+
 #define DELAY_TIMES_COUNT 5
 
 const char *delayTimeNames[DELAY_TIMES_COUNT] = {
@@ -279,19 +281,26 @@ class OTCutAddPage : public EncoderPage, public ClockCallback  {
                   from = random(2, 8);
                   to = random(0, from - 2);
                 }
+                // Disable Ram Recorder 
+                MidiUart.sendCC(otTrack, OT_RECORDER_ARM, 0);
                 sliceTrack32(otTrack, from * 4, to * 4);
             }
         }
         
         void on16Callback() {
-
+            uint8_t val = (MidiClock.div16th_counter) % 32;
             if (restorePlayback) {
-                uint8_t val = (MidiClock.div16th_counter) % 32;
                 if ((val % 4) == 0) {
                   restorePlayback = false;
+                  // Enable Ram Recorder 
+                  MidiUart.sendCC(otTrack, OT_RECORDER_ARM, 1);                  
                   sliceTrack32(otTrack, val, 127, true);
                   return;
                 }
+            }
+            if ((val % 16) == 0) {
+                // Enable Ram Recorder 
+                MidiUart.sendCC(otTrack, OT_RECORDER_ARM, 1);                  
             }
             if (supaTriggaActive) {
                 doSupatrigga();
