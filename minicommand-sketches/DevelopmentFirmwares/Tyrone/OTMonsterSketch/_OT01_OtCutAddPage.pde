@@ -251,7 +251,7 @@ class OTCutAddPage : public EncoderPage, public ClockCallback  {
             }
         }
         
-        void sliceTrack32(uint8_t midiChannel, uint8_t from, uint8_t to, bool correct = true) {
+        void sliceTrack32(uint8_t midiChannel, uint8_t from, uint8_t to, bool correct = false) {
             uint8_t pfrom, pto;
             if (from > to) {
                 pfrom = MIN(127, from * 4 + 1);
@@ -294,7 +294,7 @@ class OTCutAddPage : public EncoderPage, public ClockCallback  {
                   restorePlayback = false;
                   // Enable Ram Recorder 
                   MidiUart.sendCC(otTrack, OT_RECORDER_ARM, 1);                  
-                  sliceTrack32(otTrack, val, 127, true);
+                  sliceTrack32(otTrack, val, 127, false);
                   return;
                 }
             }
