@@ -36,6 +36,8 @@
 
 #define DELAY_TIMES_COUNT 5
 
+#define MIDI_NOTE_C3 ((3 * 12) + 0)
+
 const char *delayTimeNames[DELAY_TIMES_COUNT] = {
     "/2 ",
     "/4 ",
@@ -267,6 +269,7 @@ class OTCutAddPage : public EncoderPage, public ClockCallback  {
             MidiUart.sendCC(midiChannel, OT_PLAYBACK_PARAM2, pfrom);
             MidiUart.sendCC(midiChannel, OT_PLAYBACK_PARAM4, pto);
             MidiUart.sendNoteOn(midiChannel, MIDI_NOTE_C3, 127);
+            MidiUart.sendNoteOff(midiChannel, MIDI_NOTE_C3, 127);            
         }
         
         void doSupatrigga() {
