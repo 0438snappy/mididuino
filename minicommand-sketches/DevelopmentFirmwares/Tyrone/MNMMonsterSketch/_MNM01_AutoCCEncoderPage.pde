@@ -26,7 +26,7 @@ class AutoCCEncoderPage : public EncoderPage, public ClockCallback {
   RecordingEncoder<RECORDING_LENGTH> recEncoders[4];
 
   bool muted;
-  void on32Callback(uint32_t counter);
+  void on16Callback(uint32_t counter);
   void startRecording();
   void stopRecording();
   void clearRecording();
@@ -51,12 +51,12 @@ void AutoCCEncoderPage::setup() {
     encoders[i] = &recEncoders[i];
     ccHandler.addEncoder(&realEncoders[i]);
   }
-  MidiClock.addOn32Callback(this, (midi_clock_callback_ptr_t)&AutoCCEncoderPage::on32Callback);
+  MidiClock.addOn16Callback(this, (midi_clock_callback_ptr_t)&AutoCCEncoderPage::on16Callback);
   EncoderPage::setup();
 }
 
 
-void AutoCCEncoderPage::on32Callback(uint32_t counter) {
+void AutoCCEncoderPage::on16Callback(uint32_t counter) {
   if (muted)
     return;
 
