@@ -62,7 +62,8 @@ class TransposeConfigPage : public EncoderPage {
         void setup(){         
             updateAllTracksMode = false;
             trackIndex = (trackSelectEncoder.getValue() - 1);           
-            trackType = transposeModeEncoder.getValue();
+            trackType = MIDI_TRACKS;
+            transposeModeEncoder.setValue(trackType, true);
             octatrackTranspose->setTransposeMode(trackType); 
             updateEncoders();           
         }        
