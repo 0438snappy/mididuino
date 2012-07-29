@@ -25,7 +25,7 @@ public:
     // TODO:  set up "defaults" for the autoNRPNPages?
     
     switchPage.initPages(&autoNRPNPages[0], &autoNRPNPages[1], &autoNRPNPages[2], &tetraEditorPage);
-//    switchPage.initPages(&tetraEditorPage, &autoNRPNPages[0], NULL, NULL);    
+//    switchPage.initPages(&autoNRPNPages[0], NULL, NULL, &tetraEditorPage);    
     switchPage.parent = this;        
     
     tetraParameterSelectPage.setup();

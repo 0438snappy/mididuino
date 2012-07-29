@@ -237,7 +237,7 @@ class AutoNRPNEncoderPage : public EncoderPage, public ClockCallback {
   RecordingEncoder<RECORDING_LENGTH> recEncoders[4];
 
   bool muted;
-  void on32Callback(uint32_t counter);
+  void on16Callback(uint32_t counter);
   void startRecording();
   void stopRecording();
   void clearRecording();

@@ -8,11 +8,11 @@ void AutoNRPNEncoderPage::setup() {
     recEncoders[i].initRecordingEncoder(&realEncoders[i]);
     encoders[i] = &recEncoders[i];
   }
-  MidiClock.addOn32Callback(this, (midi_clock_callback_ptr_t)&AutoNRPNEncoderPage::on32Callback);
+  MidiClock.addOn16Callback(this, (midi_clock_callback_ptr_t)&AutoNRPNEncoderPage::on16Callback);
   EncoderPage::setup();
 }
 
-void AutoNRPNEncoderPage::on32Callback(uint32_t counter) {
+void AutoNRPNEncoderPage::on16Callback(uint32_t counter) {
   if (muted)
     return;
 

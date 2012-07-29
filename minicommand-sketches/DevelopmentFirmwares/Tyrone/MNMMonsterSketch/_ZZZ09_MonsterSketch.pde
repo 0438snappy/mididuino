@@ -2,19 +2,14 @@
 //  TOP LEVEL SKETCH
 //
 #include <MidiClockPage.h>
-MNMMonoPolySketch sketch2;
-MNMLiveSketch sketch3;
+MNMLiveSketch sketch2;
 TetraEditorSketch sketch;
-SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, &sketch3, NULL);
-//SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, NULL, NULL);
-//SketchSwitchPage sketchSwitchPage(NULL, &sketch2, &sketch, NULL, NULL);
+SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, NULL, NULL);
 
 void setup() {
   initMNMTask();
-  
+  sketch.setupMonster(true);    
   sketch2.setupMonster(true);
-  sketch.setupMonster(true);  
-  sketch3.setupMonster(true);
   GUI.setSketch(&_defaultSketch);
   GUI.setPage(&sketchSwitchPage);
   GUI.addEventHandler(handleEvent);
