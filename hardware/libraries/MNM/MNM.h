@@ -48,6 +48,7 @@ class MNMClass {
     sendNoteOff(currentTrack, note);
   }
   void sendNoteOff(uint8_t track, uint8_t note);
+  void sendNoteOff(uint8_t track, uint8_t note, uint8_t velocity);
 
   void setParam(uint8_t param, uint8_t value) {
     setParam(currentTrack, param, value);

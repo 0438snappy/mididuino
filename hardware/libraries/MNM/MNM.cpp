@@ -16,6 +16,10 @@ void MNMClass::sendNoteOn(uint8_t track, uint8_t note, uint8_t velocity) {
   MidiUart.sendNoteOn(track + global.baseChannel, note, velocity);
 }
 
+void MNMClass::sendNoteOff(uint8_t track, uint8_t note, uint8_t velocity) {
+  MidiUart.sendNoteOff(track + global.baseChannel, note, velocity);
+}
+
 void MNMClass::sendNoteOff(uint8_t track, uint8_t note) {
   MidiUart.sendNoteOff(track + global.baseChannel, note);
 }
