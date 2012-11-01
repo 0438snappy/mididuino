@@ -5,33 +5,34 @@ int mod(int x, int m) {
 
 
 typedef struct tetra_editor_page_t {
-  const char* shortname;
+  //const char* shortname;
   const char* longname;
   TetraNRPNEncoder *encoders[4];
 };
 
 tetra_editor_page_t tetraEditorPageEncoders[NUM_TETRA_EDITOR_PAGES] = {
-  {"P01", "OSC1 PARAMS", {&tetraOsc1FreqEncoder, &tetraOsc1TuneEncoder, &tetraOsc1ShapeEncoder, &tetraOsc1GlideEncoder}}, 
-  {"P02", "OSC2 PARAMS", {&tetraOsc2FreqEncoder, &tetraOsc2TuneEncoder, &tetraOsc2ShapeEncoder, &tetraOsc2GlideEncoder}}, 
-  {"P03", "OSC LEVELS", {&tetraOscMixEncoder, &tetraNoiseLvlEncoder, &tetraSubOsc1LevelEncoder, &tetraSubOsc2LevelEncoder}}, 
-  {"P04", "OSC VOLUME", {&tetraOutputSpreadEncoder, &tetraVoiceVolumeEncoder, &tetraFeedbackGainEncoder, &tetraFeedbackVolEncoder}}, 
-  {"P05", "OSC SYNC SLOP", {&tetraOsc1KeyboardEncoder, &tetraOsc2KeyboardEncoder, &tetraSyncEncoder, &tetraOscSlopEncoder}}, 
-  {"P06", "VCF ENVELOPE", {&tetraVcfEnvAttackEncoder, &tetraVcfEnvDecayEncoder, &tetraVcfEnvSustainEncoder, &tetraVcfEnvReleaseEncoder}}, 
-  {"P07", "VCF MOD", {&tetraVcfKeyboardAmtEncoder, &tetraVcfAudioModEncoder, &tetraVcfEnvAmtEncoder, &tetraVcfVelAmtEncoder}}, 
-  {"P08", "OSC VCF OPTIONS", {&tetraVcfPolesEncoder, &tetraVcfEnvDelayEncoder, &tetraUnisonModeEncoder, &tetraUnisonOnOffEncoder}}, 
-  {"P09", "VCA ENVELOPE", {&tetraVcaEnvAttackEncoder, &tetraVcaEnvDecayEncoder, &tetraVcaEnvSustainEncoder, &tetraVcaEnvReleaseEncoder}}, 
-  {"P10", "VCA MOD", {&tetraVcaLevelEncoder, &tetraVcaEnvAmtEncoder, &tetraVcaVelAmtEncoder, &tetraVcaEnvDelayEncoder}}, 
-  {"P11", "ENV3 ENVELOPE", {&tetraEnv3AttackEncoder, &tetraEnv3DecayEncoder, &tetraEnv3SustainEncoder, &tetraEnv3ReleaseEncoder}}, 
-  {"P12", "ENV3 MOD", {&tetraEnv3DestinationEncoder, &tetraEnv3AmtEncoder, &tetraEnv3DelayEncoder, &tetraEnv3RepeatModeEncoder}}, 
-  {"P13", "LFO1 PARAMS", {&tetraLfo1FreqEncoder, &tetraLfo1ShapeEncoder, &tetraLfo1AmtEncoder, &tetraLfo1DestinationEncoder}}, 
-  {"P14", "LFO2 PARAMS", {&tetraLfo2FreqEncoder, &tetraLfo2ShapeEncoder, &tetraLfo2AmtEncoder, &tetraLfo2DestinationEncoder}}, 
-  {"P15", "LFO3 PARAMS", {&tetraLfo3FreqEncoder, &tetraLfo3ShapeEncoder, &tetraLfo3AmtEncoder, &tetraLfo3DestinationEncoder}}, 
-  {"P16", "LFO4 PARAMS", {&tetraLfo4FreqEncoder, &tetraLfo4ShapeEncoder, &tetraLfo4AmtEncoder, &tetraLfo4DestinationEncoder}}, 
-  {"P17", "LFO KEY SYNC", {&tetraLfo1KeySyncEncoder, &tetraLfo2KeySyncEncoder, &tetraLfo3KeySyncEncoder, &tetraLfo4KeySyncEncoder}}, 
-  {"P18", "MOD1 PARAMS", {&tetraMod1SourceEncoder, &tetraMod1AmtEncoder, &tetraMod1DestinationEncoder, NULL}}, 
-  {"P19", "MOD2 PARAMS", {&tetraMod2SourceEncoder, &tetraMod2AmtEncoder, &tetraMod2DestinationEncoder, NULL}}, 
-  {"P20", "MOD3 PARAMS", {&tetraMod3SourceEncoder, &tetraMod3AmtEncoder, &tetraMod3DestinationEncoder, NULL}}, 
-  {"P21", "MOD4 PARAMS", {&tetraMod4SourceEncoder, &tetraMod4AmtEncoder, &tetraMod4DestinationEncoder, NULL}}
+  {"OSC1 PARMS", {&tetraOsc1FreqEncoder, &tetraOsc1TuneEncoder, &tetraOsc1ShapeEncoder, &tetraOsc1GlideEncoder}}, 
+  {"OSC2 PARMS", {&tetraOsc2FreqEncoder, &tetraOsc2TuneEncoder, &tetraOsc2ShapeEncoder, &tetraOsc2GlideEncoder}}, 
+  {"OSC LVLS", {&tetraOscMixEncoder, &tetraNoiseLvlEncoder, &tetraSubOsc1LevelEncoder, &tetraSubOsc2LevelEncoder}}, 
+  {"OSC VOL", {&tetraOutputSpreadEncoder, &tetraVoiceVolumeEncoder, &tetraFeedbackGainEncoder, &tetraFeedbackVolEncoder}}, 
+  {"OSC SYNC SLOP", {&tetraOsc1KeyboardEncoder, &tetraOsc2KeyboardEncoder, &tetraSyncEncoder, &tetraOscSlopEncoder}}, 
+  {"VCF ENV", {&tetraVcfEnvAttackEncoder, &tetraVcfEnvDecayEncoder, &tetraVcfEnvSustainEncoder, &tetraVcfEnvReleaseEncoder}}, 
+  {"VCF MOD", {&tetraVcfKeyboardAmtEncoder, &tetraVcfAudioModEncoder, &tetraVcfEnvAmtEncoder, &tetraVcfVelAmtEncoder}}, 
+  {"OSC VCF OPTNS", {&tetraVcfPolesEncoder, &tetraVcfEnvDelayEncoder, &tetraUnisonModeEncoder, &tetraUnisonOnOffEncoder}}, 
+  {"VCA ENV", {&tetraVcaEnvAttackEncoder, &tetraVcaEnvDecayEncoder, &tetraVcaEnvSustainEncoder, &tetraVcaEnvReleaseEncoder}}, 
+  {"VCA MOD", {&tetraVcaLevelEncoder, &tetraVcaEnvAmtEncoder, &tetraVcaVelAmtEncoder, &tetraVcaEnvDelayEncoder}}, 
+  {"ENV3 ENV", {&tetraEnv3AttackEncoder, &tetraEnv3DecayEncoder, &tetraEnv3SustainEncoder, &tetraEnv3ReleaseEncoder}}, 
+  {"ENV3 MOD", {&tetraEnv3DestinationEncoder, &tetraEnv3AmtEncoder, &tetraEnv3DelayEncoder, &tetraEnv3RepeatModeEncoder}}, 
+  {"LFO1 PARMS", {&tetraLfo1FreqEncoder, &tetraLfo1ShapeEncoder, &tetraLfo1AmtEncoder, &tetraLfo1DestinationEncoder}}, 
+  {"LFO2 PARMS", {&tetraLfo2FreqEncoder, &tetraLfo2ShapeEncoder, &tetraLfo2AmtEncoder, &tetraLfo2DestinationEncoder}}, 
+//  {"LFO3 PARMS", {&tetraLfo3FreqEncoder, &tetraLfo3ShapeEncoder, &tetraLfo3AmtEncoder, &tetraLfo3DestinationEncoder}}, 
+//  {"LFO4 PARMS", {&tetraLfo4FreqEncoder, &tetraLfo4ShapeEncoder, &tetraLfo4AmtEncoder, &tetraLfo4DestinationEncoder}}, 
+//  {"LFO KEY SYNC", {&tetraLfo1KeySyncEncoder, &tetraLfo2KeySyncEncoder, &tetraLfo3KeySyncEncoder, &tetraLfo4KeySyncEncoder}}, 
+  {"LFO KEY SYNC", {&tetraLfo1KeySyncEncoder, &tetraLfo2KeySyncEncoder, NULL, NULL}},   
+  {"MOD1 PARMS", {&tetraMod1SourceEncoder, &tetraMod1AmtEncoder, &tetraMod1DestinationEncoder, NULL}} 
+//  {"MOD2 PARMS", {&tetraMod2SourceEncoder, &tetraMod2AmtEncoder, &tetraMod2DestinationEncoder, NULL}} 
+//  {"P20", "MOD3 PARAMS", {&tetraMod3SourceEncoder, &tetraMod3AmtEncoder, &tetraMod3DestinationEncoder, NULL}}, 
+//  {"P21", "MOD4 PARAMS", {&tetraMod4SourceEncoder, &tetraMod4AmtEncoder, &tetraMod4DestinationEncoder, NULL}}
 //  {"P22", "CONTROLLERS 1", {&tetraPressureAmtEncoder, &tetraPressureDestEncoder, &tetraVelocityAmtEncoder, &tetraVelocityDestEncoder}}, 
 //  {"P23", "CONTROLLERS 2", {&tetraModWheelAmtEncoder, &tetraModWheelDestEncoder, &tetraPitchBendRangeEncoder, NULL}}, 
 //  {"P24", "CLOCK & ARP", {&tetraBpmTempoEncoder, &tetraClockDivideEncoder, &tetraArpeggiatorModeEncoder, &tetraArpeggiatorOIEncoder}} 
@@ -99,7 +100,7 @@ class TetraParameterAssignPage : public EncoderPage {
                     uint8_t nrpn = 105 + i;
                     MidiUart.sendNRPN(channel, nrpn, paramNumber);
                     GUI.setLine(GUI.LINE1);
-                    GUI.flash_string_fill("** ASSIGNED **", 1000);
+                    GUI.flash_string_fill("ASSIGNED TO", 1000);
                     GUI.setLine(GUI.LINE2);
                     GUI.flash_printf_fill("TETRA ENC: %b", i);
                     GUI.popPage(this);
@@ -109,6 +110,7 @@ class TetraParameterAssignPage : public EncoderPage {
             // Pressing any Button will "Cancel" the assign and pop back to the TetraEditor Page
             for (int i = Buttons.BUTTON1; i<=  Buttons.BUTTON4; i++){
                 if (EVENT_PRESSED(event, i)) {
+                    GUI.flash_strings_fill("ASSIGN PARAM", "CANCELLED");
                     GUI.popPage(this);
                     return true;
                 }
@@ -123,12 +125,6 @@ TetraParameterAssignPage tetraParameterAssignPage;
 
 
 
-/**
- *
- * GLOBAL VARIABLE TO HOLD THE CURRENTLY SELECTED TETRA EDITOR PAGE
- *
- **/
-int pageIndex;
 
 
 /**
@@ -144,6 +140,13 @@ int pageIndex;
 class TetraEditorPage : public EncoderPage {
 
   public:         
+
+        /**
+         *
+         * VARIABLE TO HOLD THE CURRENTLY SELECTED TETRA EDITOR PAGE
+         *
+         **/
+        int pageIndex;
     
         TetraEditorPage()
         {
@@ -196,7 +199,8 @@ class TetraEditorPage : public EncoderPage {
                         GUI.pushPage(&tetraParameterAssignPage);
                         return true;
                     }
-                }                               
+                }                              
+                GUI.flash_strings_fill("CHOOSE PARAM", "TO ASSIGN");                
             }  
             
             // Pressing an Encoder will flash the long name (and enum value if exists)
@@ -216,135 +220,6 @@ class TetraEditorPage : public EncoderPage {
 
 };
 
-
-
-/**
- * Creates a page feature 4 encoders that can be configured using a
- * template class parameter. These 4 encoders are overlayed with
- * recording encoder to provide recording functionality. 
- *
- * Redefinition of Manuel's AutoEncoderPage with some changes to 
- * button configurations, plus a couple of new methods to learn and clear CCs
- * for specific encoders, plus updated to handle TetraNRPN encoders
- *
- * Encoders are not autolearned, but need to be selected manually from the TetraEditorPage
- *
- **/
-class AutoNRPNEncoderPage : public EncoderPage, public ClockCallback {
- public:
-  TetraNRPNEncoder realEncoders[4];
-  const static int RECORDING_LENGTH = 64; // recording length in 32th
-  RecordingEncoder<RECORDING_LENGTH> recEncoders[4];
-
-  bool muted;
-  void on16Callback(uint32_t counter);
-  void startRecording();
-  void stopRecording();
-  void clearRecording();
-  void clearRecording(uint8_t i);
-  virtual void setup();
-
-  void clearEncoder(uint8_t i);
-  void learnEncoder(uint8_t i, TetraNRPNEncoder *enc);
-
-  virtual bool handleEvent(gui_event_t *event);
-};
-#define NRPN_AUTO_PAGES_CNT 3
-AutoNRPNEncoderPage autoNRPNPages[NRPN_AUTO_PAGES_CNT]; 
-
-
-
-/**
- * Creates a page displaying some static text and 4 encoder options, designed to be used as a modal GUI to assign parameters back to the TetraAutoEncoderPages.  
- *
- * The user has the option to either:
- *     -  click an encoder, which will "select" the parameter and assign it back to the TetraAutoEncoderPage
- *     -  click any button, which will "cancel" the operation and return display to the calling page.
- *
- **/
-class TetraParameterSelectPage : public EncoderPage {
-
-  public: 
-    
-        TetraParameterSelectPage()
-        {
-	}
-        
-        uint8_t targetEncoderIndex;
-        AutoNRPNEncoderPage * targetPage;
-
-        void setup(){   
-          if (!isSetup){ 
-              setEditorPage(&tetraEditorPageEncoders[pageIndex]);
-              targetEncoderIndex = 0;
-              targetPage = NULL;
-              isSetup = true;
-          }
-        }      
-        
-        void display() {
-            GUI.setLine(GUI.LINE1); 
-            GUI.put_string_fill("-> SELECT PARAM:");
-            GUI.setLine(GUI.LINE2); 
-            GUI.put_string_at(0, encoders[0]->getName());
-            GUI.put_string_at(4, encoders[1]->getName());
-            GUI.put_string_at(8, encoders[2]->getName());
-            GUI.put_string_at(12, encoders[3]->getName());            
-        }
-        
-        void setEditorPage(tetra_editor_page_t *page){ 
-            GUI.setLine(GUI.LINE1);
-            GUI.flash_string_fill(page->longname);          
-            encoders[0] = page->encoders[0];
-            encoders[1] = page->encoders[1];
-            encoders[2] = page->encoders[2];
-            encoders[3] = page->encoders[3];
-            redisplayPage ();           
-        }
-        
-	bool handleEvent(gui_event_t *event) {
-   
-            // Pressing an encoder will assign the param to the auto encoder page
-            for (int i = Buttons.ENCODER1; i<=  Buttons.ENCODER4; i++){
-                if (EVENT_PRESSED(event, i)) {
-                    
-                    if (targetPage != NULL) {
-                      targetPage->learnEncoder(targetEncoderIndex, tetraEditorPageEncoders[pageIndex].encoders[i]); 
-                      targetPage->redisplayPage();
-                    }                    
-                    
-                    GUI.popPage(this);
-                }
-            }
-            
-            // 
-            // Pressing Button 2 (bottom left) displays "previous" editor page
-            if (EVENT_PRESSED(event, Buttons.BUTTON2)) {
-                pageIndex = mod(pageIndex-1, NUM_TETRA_EDITOR_PAGES);
-                setEditorPage (&tetraEditorPageEncoders[pageIndex]);
-                return true;
-            }  
-            
-            // Pressing Button 3 (bottom right) displays "next" editor page
-            if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
-                pageIndex = mod(pageIndex + 1, NUM_TETRA_EDITOR_PAGES);
-                setEditorPage (&tetraEditorPageEncoders[pageIndex]);
-                return true;
-            } 
-            
-            // Pressing Button 1 or 4 will "Cancel" the assign and pop back to the auto encoder page
-            if ((EVENT_PRESSED(event, Buttons.BUTTON1)) || (EVENT_PRESSED(event, Buttons.BUTTON4))){
-                GUI.popPage(this);
-                return true;
-            }
-                                       
-            
-            return false;
-
-	}
-
-};
-TetraParameterSelectPage tetraParameterSelectPage;
 
 
 

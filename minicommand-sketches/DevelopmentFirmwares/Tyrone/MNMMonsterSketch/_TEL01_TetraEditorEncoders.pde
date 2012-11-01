@@ -2,7 +2,7 @@
 //#include <WProgram.h>  //Midi-Ctrl 0017
 
 #define TETRA_MIDI_CHANNEL (15 - 1) // Midi Channel 15
-#define NUM_TETRA_EDITOR_PAGES 21
+#define NUM_TETRA_EDITOR_PAGES 16
 
 
 
@@ -70,15 +70,17 @@ public:
   }  
   
   virtual void displayAt(int i){
-      // Display Encoder value on GUI.LINE2        
-      GUI.setLine(GUI.LINE2);
-      GUI.put_value(i, getValue());    
-    
+          
       if (hasChanged() || isPressed) {
         // Flash Long Encoder Name on GUI.LINE1
         GUI.setLine(GUI.LINE1);
         GUI.flash_string_fill(longName);
       }
+
+      // Display Encoder value on GUI.LINE2        
+      GUI.setLine(GUI.LINE2);
+      GUI.put_value(i, getValue());
+      redisplay = false;      
   }  
 
   /** Create a NRPN encoder sending NRPN messages with number _nrpn on _channel. **/
@@ -97,83 +99,83 @@ TetraNRPNEncoder tetraOsc1FreqEncoder(0, 0, TETRA_MIDI_CHANNEL, "FRQ", "OSC1 FRE
 TetraNRPNEncoder tetraOsc1TuneEncoder(1, 1, TETRA_MIDI_CHANNEL, "TUN", "OSC1 TUNE", 0, 100, 0);
 TetraNRPNEncoder tetraOsc1ShapeEncoder(2, 2, TETRA_MIDI_CHANNEL, "SHP", "OSC1 SHAPE", 0, 103, 0);
 TetraNRPNEncoder tetraOsc1GlideEncoder(3, 3, TETRA_MIDI_CHANNEL, "GLI", "OSC1 GLIDE", 0, 127, 0);
-TetraNRPNEncoder tetraOsc1KeyboardEncoder(4, 4, TETRA_MIDI_CHANNEL, "KEY", "OSC1 KEYBOARD", 0, 1, 0);
+TetraNRPNEncoder tetraOsc1KeyboardEncoder(4, 4, TETRA_MIDI_CHANNEL, "KEY", "OSC1 KEYBD", 0, 1, 0);
 TetraNRPNEncoder tetraOsc2FreqEncoder(6, 5, TETRA_MIDI_CHANNEL, "FRQ", "OSC2 FREQ", 0, 120, 0);
 TetraNRPNEncoder tetraOsc2TuneEncoder(7, 6, TETRA_MIDI_CHANNEL, "TUN", "OSC2 TUNE", 0, 100, 0);
 TetraNRPNEncoder tetraOsc2ShapeEncoder(8, 7, TETRA_MIDI_CHANNEL, "SHP", "OSC2 SHAPE", 0, 103, 0);
 TetraNRPNEncoder tetraOsc2GlideEncoder(9, 8, TETRA_MIDI_CHANNEL, "GLI", "OSC2 GLIDE", 0, 127, 0);
-TetraNRPNEncoder tetraOsc2KeyboardEncoder(10, 9, TETRA_MIDI_CHANNEL, "KEY", "OSC2 KEYBOARD", 0, 1, 0);
+TetraNRPNEncoder tetraOsc2KeyboardEncoder(10, 9, TETRA_MIDI_CHANNEL, "KEY", "OSC2 KEYBD", 0, 1, 0);
 TetraNRPNEncoder tetraSyncEncoder(12, 10, TETRA_MIDI_CHANNEL, "SYN", "SYNC", 0, 1, 0);
 TetraNRPNEncoder tetraGlideModeEncoder(13, 11, TETRA_MIDI_CHANNEL, "GMD", "GLIDE MODE", 0, 3, 0);
 TetraNRPNEncoder tetraOscSlopEncoder(14, 12, TETRA_MIDI_CHANNEL, "SLP", "OSC SLOP", 0, 5, 0);
 TetraNRPNEncoder tetraOscMixEncoder(16, 13, TETRA_MIDI_CHANNEL, "MIX", "OSC MIX", 0, 127, 0);
 TetraNRPNEncoder tetraNoiseLvlEncoder(17, 14, TETRA_MIDI_CHANNEL, "NOI", "NOISE LVL", 0, 127, 0);
 TetraNRPNEncoder tetraVcfFreqEncoder(20, 15, TETRA_MIDI_CHANNEL, "CUT", "VCF FREQ", 0, 164, 0);
-TetraNRPNEncoder tetraVcfResonanceEncoder(21, 16, TETRA_MIDI_CHANNEL, "RES", "VCF RESONANCE", 0, 127, 0);
-TetraNRPNEncoder tetraVcfKeyboardAmtEncoder(22, 17, TETRA_MIDI_CHANNEL, "FKY", "VCF KEYBOARD AMT", 0, 127, 0);
+TetraNRPNEncoder tetraVcfResonanceEncoder(21, 16, TETRA_MIDI_CHANNEL, "RES", "VCF RES", 0, 127, 0);
+TetraNRPNEncoder tetraVcfKeyboardAmtEncoder(22, 17, TETRA_MIDI_CHANNEL, "FKY", "VCF KEYBD AMT", 0, 127, 0);
 TetraNRPNEncoder tetraVcfAudioModEncoder(23, 18, TETRA_MIDI_CHANNEL, "MOD", "VCF AUDIO MOD", 0, 127, 0);
 TetraNRPNEncoder tetraVcfPolesEncoder(24, 19, TETRA_MIDI_CHANNEL, "POL", "VCF POLES", 0, 1, 0);
 TetraNRPNEncoder tetraVcfEnvAmtEncoder(25, 20, TETRA_MIDI_CHANNEL, "AMT", "VCF ENV AMT", 0, 254, 0);
 TetraNRPNEncoder tetraVcfVelAmtEncoder(26, 21, TETRA_MIDI_CHANNEL, "VEL", "VCF VEL AMT", 0, 127, 0);
-TetraNRPNEncoder tetraVcfEnvDelayEncoder(27, 22, TETRA_MIDI_CHANNEL, "DEL", "VCF ENV DELAY", 0, 127, 0);
-TetraNRPNEncoder tetraVcfEnvAttackEncoder(28, 23, TETRA_MIDI_CHANNEL, "ATK", "VCF ENV ATTACK", 0, 127, 0);
-TetraNRPNEncoder tetraVcfEnvDecayEncoder(29, 24, TETRA_MIDI_CHANNEL, "DCY", "VCF ENV DECAY", 0, 127, 0);
-TetraNRPNEncoder tetraVcfEnvSustainEncoder(30, 25, TETRA_MIDI_CHANNEL, "SUS", "VCF ENV SUSTAIN", 0, 127, 0);
-TetraNRPNEncoder tetraVcfEnvReleaseEncoder(31, 26, TETRA_MIDI_CHANNEL, "REL", "VCF ENV RELEASE", 0, 127, 0);
+TetraNRPNEncoder tetraVcfEnvDelayEncoder(27, 22, TETRA_MIDI_CHANNEL, "DEL", "VCF ENV DEL", 0, 127, 0);
+TetraNRPNEncoder tetraVcfEnvAttackEncoder(28, 23, TETRA_MIDI_CHANNEL, "ATK", "VCF ENV ATK", 0, 127, 0);
+TetraNRPNEncoder tetraVcfEnvDecayEncoder(29, 24, TETRA_MIDI_CHANNEL, "DCY", "VCF ENV DEC", 0, 127, 0);
+TetraNRPNEncoder tetraVcfEnvSustainEncoder(30, 25, TETRA_MIDI_CHANNEL, "SUS", "VCF ENV SUS", 0, 127, 0);
+TetraNRPNEncoder tetraVcfEnvReleaseEncoder(31, 26, TETRA_MIDI_CHANNEL, "REL", "VCF ENV REL", 0, 127, 0);
 TetraNRPNEncoder tetraVcaLevelEncoder(32, 27, TETRA_MIDI_CHANNEL, "LEV", "VCA LEVEL", 0, 127, 0);
 TetraNRPNEncoder tetraOutputSpreadEncoder(40, 28, TETRA_MIDI_CHANNEL, "SPR", "OUTPUT SPREAD", 0, 127, 0);
-TetraNRPNEncoder tetraVoiceVolumeEncoder(41, 29, TETRA_MIDI_CHANNEL, "VOL", "VOICE VOLUME", 0, 127, 0);
+TetraNRPNEncoder tetraVoiceVolumeEncoder(41, 29, TETRA_MIDI_CHANNEL, "VOL", "VOICE VOL", 0, 127, 0);
 TetraNRPNEncoder tetraVcaEnvAmtEncoder(33, 30, TETRA_MIDI_CHANNEL, "AMT", "VCA ENV AMT", 0, 127, 0);
 TetraNRPNEncoder tetraVcaVelAmtEncoder(34, 31, TETRA_MIDI_CHANNEL, "VEL", "VCA VEL AMT", 0, 127, 0);
-TetraNRPNEncoder tetraVcaEnvDelayEncoder(35, 32, TETRA_MIDI_CHANNEL, "DEL", "VCA ENV DELAY", 0, 127, 0);
-TetraNRPNEncoder tetraVcaEnvAttackEncoder(36, 33, TETRA_MIDI_CHANNEL, "ATK", "VCA ENV ATTACK", 0, 127, 0);
-TetraNRPNEncoder tetraVcaEnvDecayEncoder(37, 34, TETRA_MIDI_CHANNEL, "DCY", "VCA ENV DECAY", 0, 127, 0);
-TetraNRPNEncoder tetraVcaEnvSustainEncoder(38, 35, TETRA_MIDI_CHANNEL, "SUS", "VCA ENV SUSTAIN", 0, 127, 0);
-TetraNRPNEncoder tetraVcaEnvReleaseEncoder(39, 36, TETRA_MIDI_CHANNEL, "REL", "VCA ENV RELEASE", 0, 127, 0);
+TetraNRPNEncoder tetraVcaEnvDelayEncoder(35, 32, TETRA_MIDI_CHANNEL, "DEL", "VCA ENV DEL", 0, 127, 0);
+TetraNRPNEncoder tetraVcaEnvAttackEncoder(36, 33, TETRA_MIDI_CHANNEL, "ATK", "VCA ENV ATK", 0, 127, 0);
+TetraNRPNEncoder tetraVcaEnvDecayEncoder(37, 34, TETRA_MIDI_CHANNEL, "DCY", "VCA ENV DEC", 0, 127, 0);
+TetraNRPNEncoder tetraVcaEnvSustainEncoder(38, 35, TETRA_MIDI_CHANNEL, "SUS", "VCA ENV SUS", 0, 127, 0);
+TetraNRPNEncoder tetraVcaEnvReleaseEncoder(39, 36, TETRA_MIDI_CHANNEL, "REL", "VCA ENV REL", 0, 127, 0);
 TetraNRPNEncoder tetraLfo1FreqEncoder(42, 37, TETRA_MIDI_CHANNEL, "FRQ", "LFO1 FREQ", 0, 166, 0);
 TetraNRPNEncoder tetraLfo1ShapeEncoder(43, 38, TETRA_MIDI_CHANNEL, "SHP", "LFO1 SHAPE", 0, 4, 0);
 TetraNRPNEncoder tetraLfo1AmtEncoder(44, 39, TETRA_MIDI_CHANNEL, "AMT", "LFO1 AMT", 0, 127, 0);
-TetraNRPNEncoder tetraLfo1DestinationEncoder(45, 40, TETRA_MIDI_CHANNEL, "DST", "LFO1 DESTINATION", 0, 43, 0);
+TetraNRPNEncoder tetraLfo1DestinationEncoder(45, 40, TETRA_MIDI_CHANNEL, "DST", "LFO1 DEST", 0, 43, 0);
 TetraNRPNEncoder tetraLfo1KeySyncEncoder(46, 41, TETRA_MIDI_CHANNEL, "SYN", "LFO1 KEY SYNC", 0, 1, 0);
 TetraNRPNEncoder tetraLfo2FreqEncoder(47, 42, TETRA_MIDI_CHANNEL, "FRQ", "LFO2 FREQ", 0, 166, 0);
 TetraNRPNEncoder tetraLfo2ShapeEncoder(48, 43, TETRA_MIDI_CHANNEL, "SHP", "LFO2 SHAPE", 0, 4, 0);
 TetraNRPNEncoder tetraLfo2AmtEncoder(49, 44, TETRA_MIDI_CHANNEL, "AMT", "LFO2 AMT", 0, 127, 0);
-TetraNRPNEncoder tetraLfo2DestinationEncoder(50, 45, TETRA_MIDI_CHANNEL, "DST", "LFO2 DESTINATION", 0, 43, 0);
+TetraNRPNEncoder tetraLfo2DestinationEncoder(50, 45, TETRA_MIDI_CHANNEL, "DST", "LFO2 DEST", 0, 43, 0);
 TetraNRPNEncoder tetraLfo2KeySyncEncoder(51, 46, TETRA_MIDI_CHANNEL, "SYN", "LFO2 KEY SYNC", 0, 1, 0);
-TetraNRPNEncoder tetraLfo3FreqEncoder(52, 47, TETRA_MIDI_CHANNEL, "FRQ", "LFO3 FREQ", 0, 166, 0);
-TetraNRPNEncoder tetraLfo3ShapeEncoder(53, 48, TETRA_MIDI_CHANNEL, "SHP", "LFO3 SHAPE", 0, 4, 0);
-TetraNRPNEncoder tetraLfo3AmtEncoder(54, 49, TETRA_MIDI_CHANNEL, "AMT", "LFO3 AMT", 0, 127, 0);
-TetraNRPNEncoder tetraLfo3DestinationEncoder(55, 50, TETRA_MIDI_CHANNEL, "DST", "LFO3 DESTINATION", 0, 43, 0);
-TetraNRPNEncoder tetraLfo3KeySyncEncoder(56, 51, TETRA_MIDI_CHANNEL, "SYN", "LFO3 KEY SYNC", 0, 1, 0);
-TetraNRPNEncoder tetraLfo4FreqEncoder(57, 52, TETRA_MIDI_CHANNEL, "FRQ", "LFO4 FREQ", 0, 166, 0);
-TetraNRPNEncoder tetraLfo4ShapeEncoder(58, 53, TETRA_MIDI_CHANNEL, "SHP", "LFO4 SHAPE", 0, 4, 0);
-TetraNRPNEncoder tetraLfo4AmtEncoder(59, 54, TETRA_MIDI_CHANNEL, "AMT", "LFO4 AMT", 0, 127, 0);
-TetraNRPNEncoder tetraLfo4DestinationEncoder(60, 55, TETRA_MIDI_CHANNEL, "DST", "LFO4 DESTINATION", 0, 43, 0);
-TetraNRPNEncoder tetraLfo4KeySyncEncoder(61, 56, TETRA_MIDI_CHANNEL, "SYN", "LFO4 KEY SYNC", 0, 1, 0);
-TetraNRPNEncoder tetraEnv3DestinationEncoder(62, 57, TETRA_MIDI_CHANNEL, "DST", "ENV3 DESTINATION", 0, 43, 0);
+//TetraNRPNEncoder tetraLfo3FreqEncoder(52, 47, TETRA_MIDI_CHANNEL, "FRQ", "LFO3 FREQ", 0, 166, 0);
+//TetraNRPNEncoder tetraLfo3ShapeEncoder(53, 48, TETRA_MIDI_CHANNEL, "SHP", "LFO3 SHAPE", 0, 4, 0);
+//TetraNRPNEncoder tetraLfo3AmtEncoder(54, 49, TETRA_MIDI_CHANNEL, "AMT", "LFO3 AMT", 0, 127, 0);
+//TetraNRPNEncoder tetraLfo3DestinationEncoder(55, 50, TETRA_MIDI_CHANNEL, "DST", "LFO3 DEST", 0, 43, 0);
+//TetraNRPNEncoder tetraLfo3KeySyncEncoder(56, 51, TETRA_MIDI_CHANNEL, "SYN", "LFO3 KEY SYNC", 0, 1, 0);
+//TetraNRPNEncoder tetraLfo4FreqEncoder(57, 52, TETRA_MIDI_CHANNEL, "FRQ", "LFO4 FREQ", 0, 166, 0);
+//TetraNRPNEncoder tetraLfo4ShapeEncoder(58, 53, TETRA_MIDI_CHANNEL, "SHP", "LFO4 SHAPE", 0, 4, 0);
+//TetraNRPNEncoder tetraLfo4AmtEncoder(59, 54, TETRA_MIDI_CHANNEL, "AMT", "LFO4 AMT", 0, 127, 0);
+//TetraNRPNEncoder tetraLfo4DestinationEncoder(60, 55, TETRA_MIDI_CHANNEL, "DST", "LFO4 DEST", 0, 43, 0);
+//TetraNRPNEncoder tetraLfo4KeySyncEncoder(61, 56, TETRA_MIDI_CHANNEL, "SYN", "LFO4 KEY SYNC", 0, 1, 0);
+TetraNRPNEncoder tetraEnv3DestinationEncoder(62, 57, TETRA_MIDI_CHANNEL, "DST", "ENV3 DEST", 0, 43, 0);
 TetraNRPNEncoder tetraEnv3AmtEncoder(63, 58, TETRA_MIDI_CHANNEL, "AMT", "ENV3 AMT", 0, 254, 0);
 TetraNRPNEncoder tetraEnv3VelAmtEncoder(64, 59, TETRA_MIDI_CHANNEL, "VEL", "ENV3 VEL AMT", 0, 127, 0);
-TetraNRPNEncoder tetraEnv3DelayEncoder(65, 60, TETRA_MIDI_CHANNEL, "DEL", "ENV3 DELAY", 0, 127, 0);
-TetraNRPNEncoder tetraEnv3AttackEncoder(66, 61, TETRA_MIDI_CHANNEL, "ATK", "ENV3 ATTACK", 0, 127, 0);
-TetraNRPNEncoder tetraEnv3DecayEncoder(67, 62, TETRA_MIDI_CHANNEL, "DCY", "ENV3 DECAY", 0, 127, 0);
-TetraNRPNEncoder tetraEnv3SustainEncoder(68, 63, TETRA_MIDI_CHANNEL, "SUS", "ENV3 SUSTAIN", 0, 127, 0);
-TetraNRPNEncoder tetraEnv3ReleaseEncoder(69, 64, TETRA_MIDI_CHANNEL, "REL", "ENV3 RELEASE", 0, 127, 0);
+TetraNRPNEncoder tetraEnv3DelayEncoder(65, 60, TETRA_MIDI_CHANNEL, "DEL", "ENV3 DEL", 0, 127, 0);
+TetraNRPNEncoder tetraEnv3AttackEncoder(66, 61, TETRA_MIDI_CHANNEL, "ATK", "ENV3 ATK", 0, 127, 0);
+TetraNRPNEncoder tetraEnv3DecayEncoder(67, 62, TETRA_MIDI_CHANNEL, "DCY", "ENV3 DEC", 0, 127, 0);
+TetraNRPNEncoder tetraEnv3SustainEncoder(68, 63, TETRA_MIDI_CHANNEL, "SUS", "ENV3 SUS", 0, 127, 0);
+TetraNRPNEncoder tetraEnv3ReleaseEncoder(69, 64, TETRA_MIDI_CHANNEL, "REL", "ENV3 REL", 0, 127, 0);
 TetraNRPNEncoder tetraMod1SourceEncoder(71, 65, TETRA_MIDI_CHANNEL, "SRC", "MOD1 SOURCE", 0, 20, 0);
 TetraNRPNEncoder tetraMod1AmtEncoder(72, 66, TETRA_MIDI_CHANNEL, "AMT", "MOD1 AMT", 0, 254, 0);
-TetraNRPNEncoder tetraMod1DestinationEncoder(73, 67, TETRA_MIDI_CHANNEL, "DST", "MOD1 DESTINATION", 0, 47, 0);
-TetraNRPNEncoder tetraMod2SourceEncoder(74, 68, TETRA_MIDI_CHANNEL, "SRC", "MOD2 SOURCE", 0, 20, 0);
-TetraNRPNEncoder tetraMod2AmtEncoder(75, 69, TETRA_MIDI_CHANNEL, "AMT", "MOD2 AMT", 0, 254, 0);
-TetraNRPNEncoder tetraMod2DestinationEncoder(76, 70, TETRA_MIDI_CHANNEL, "DST", "MOD2 DESTINATION", 0, 47, 0);
-TetraNRPNEncoder tetraMod3SourceEncoder(77, 71, TETRA_MIDI_CHANNEL, "SRC", "MOD3 SOURCE", 0, 20, 0);
-TetraNRPNEncoder tetraMod3AmtEncoder(78, 72, TETRA_MIDI_CHANNEL, "AMT", "MOD3 AMT", 0, 254, 0);
-TetraNRPNEncoder tetraMod3DestinationEncoder(79, 73, TETRA_MIDI_CHANNEL, "DST", "MOD3 DESTINATION", 0, 47, 0);
-TetraNRPNEncoder tetraMod4SourceEncoder(80, 74, TETRA_MIDI_CHANNEL, "SRC", "MOD4 SOURCE", 0, 20, 0);
-TetraNRPNEncoder tetraMod4AmtEncoder(81, 75, TETRA_MIDI_CHANNEL, "AMT", "MOD4 AMT", 0, 254, 0);
-TetraNRPNEncoder tetraMod4DestinationEncoder(82, 76, TETRA_MIDI_CHANNEL, "DST", "MOD4 DESTINATION", 0, 47, 0);
-//TetraNRPNEncoder tetraSeq1DestinationEncoder(107, 77, TETRA_MIDI_CHANNEL, "DST", "SEQ1 DESTINATION", 0, 47, 0);
-//TetraNRPNEncoder tetraSeq2DestinationEncoder(108, 78, TETRA_MIDI_CHANNEL, "DST", "SEQ2 DESTINATION", 0, 47, 0);
-//TetraNRPNEncoder tetraSeq3DestinationEncoder(109, 79, TETRA_MIDI_CHANNEL, "DST", "SEQ3 DESTINATION", 0, 47, 0);
-//TetraNRPNEncoder tetraSeq4DestinationEncoder(110, 80, TETRA_MIDI_CHANNEL, "DST", "SEQ4 DESTINATION", 0, 47, 0);
+TetraNRPNEncoder tetraMod1DestinationEncoder(73, 67, TETRA_MIDI_CHANNEL, "DST", "MOD1 DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraMod2SourceEncoder(74, 68, TETRA_MIDI_CHANNEL, "SRC", "MOD2 SOURCE", 0, 20, 0);
+//TetraNRPNEncoder tetraMod2AmtEncoder(75, 69, TETRA_MIDI_CHANNEL, "AMT", "MOD2 AMT", 0, 254, 0);
+//TetraNRPNEncoder tetraMod2DestinationEncoder(76, 70, TETRA_MIDI_CHANNEL, "DST", "MOD2 DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraMod3SourceEncoder(77, 71, TETRA_MIDI_CHANNEL, "SRC", "MOD3 SOURCE", 0, 20, 0);
+//TetraNRPNEncoder tetraMod3AmtEncoder(78, 72, TETRA_MIDI_CHANNEL, "AMT", "MOD3 AMT", 0, 254, 0);
+//TetraNRPNEncoder tetraMod3DestinationEncoder(79, 73, TETRA_MIDI_CHANNEL, "DST", "MOD3 DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraMod4SourceEncoder(80, 74, TETRA_MIDI_CHANNEL, "SRC", "MOD4 SOURCE", 0, 20, 0);
+//TetraNRPNEncoder tetraMod4AmtEncoder(81, 75, TETRA_MIDI_CHANNEL, "AMT", "MOD4 AMT", 0, 254, 0);
+//TetraNRPNEncoder tetraMod4DestinationEncoder(82, 76, TETRA_MIDI_CHANNEL, "DST", "MOD4 DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraSeq1DestinationEncoder(107, 77, TETRA_MIDI_CHANNEL, "DST", "SEQ1 DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraSeq2DestinationEncoder(108, 78, TETRA_MIDI_CHANNEL, "DST", "SEQ2 DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraSeq3DestinationEncoder(109, 79, TETRA_MIDI_CHANNEL, "DST", "SEQ3 DEST", 0, 47, 0);
+//TetraNRPNEncoder tetraSeq4DestinationEncoder(110, 80, TETRA_MIDI_CHANNEL, "DST", "SEQ4 DEST", 0, 47, 0);
 //TetraNRPNEncoder tetraModWheelAmtEncoder(83, 81, TETRA_MIDI_CHANNEL, "AMT", "MOD WHEEL AMT", 0, 254, 0);
 //TetraNRPNEncoder tetraModWheelDestEncoder(84, 82, TETRA_MIDI_CHANNEL, "DST", "MOD WHEEL DEST", 0, 47, 0);
 //TetraNRPNEncoder tetraPressureAmtEncoder(85, 83, TETRA_MIDI_CHANNEL, "AMT", "PRESSURE AMT", 0, 254, 0);
@@ -203,11 +205,11 @@ TetraNRPNEncoder tetraFeedbackGainEncoder(19, 110, TETRA_MIDI_CHANNEL, "FBG", "F
 //TetraNRPNEncoder tetraPushItNoteEncoder(96, 111, TETRA_MIDI_CHANNEL, "NOT", "PUSH IT NOTE", 0, 127, 0);
 //TetraNRPNEncoder tetraPushItVelEncoder(97, 112, TETRA_MIDI_CHANNEL, "VEL", "PUSH IT VEL", 0, 127, 0);
 //TetraNRPNEncoder tetraPushItModeEncoder(98, 113, TETRA_MIDI_CHANNEL, "MOD", "PUSH IT MODE", 0, 1, 0);
-TetraNRPNEncoder tetraSubOsc1LevelEncoder(5, 114, TETRA_MIDI_CHANNEL, "SB1", "SUB OSC1 LEVEL", 0, 127, 0);
-TetraNRPNEncoder tetraSubOsc2LevelEncoder(11, 115, TETRA_MIDI_CHANNEL, "SB2", "SUB OSC2 LEVEL", 0, 127, 0);
+TetraNRPNEncoder tetraSubOsc1LevelEncoder(5, 114, TETRA_MIDI_CHANNEL, "SB1", "SUB OSC1 LVL", 0, 127, 0);
+TetraNRPNEncoder tetraSubOsc2LevelEncoder(11, 115, TETRA_MIDI_CHANNEL, "SB2", "SUB OSC2 LVL", 0, 127, 0);
 TetraNRPNEncoder tetraFeedbackVolEncoder(18, 116, TETRA_MIDI_CHANNEL, "FBV", "FEEDBACK VOL", 0, 127, 0);
 //TetraNRPNEncoder tetraSplitPointEncoder(99, 118, TETRA_MIDI_CHANNEL, "SPL", "SPLIT POINT", 0, 127, 0);
-//TetraNRPNEncoder tetraKeyboardModeEncoder(100, 119, TETRA_MIDI_CHANNEL, "KMD", "KEYBOARD MODE", 0, 2, 0);
+//TetraNRPNEncoder tetraKeyboardModeEncoder(100, 119, TETRA_MIDI_CHANNEL, "KMD", "KEYBD MODE", 0, 2, 0);
 
 
 //
