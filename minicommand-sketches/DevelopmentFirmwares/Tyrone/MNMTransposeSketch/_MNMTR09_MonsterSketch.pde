@@ -6,6 +6,8 @@ MNMTransposeSketch sketch;
 SketchSwitchPage sketchSwitchPage(NULL, &sketch, NULL, NULL, NULL);
 
 void setup() {
+  initMNMTask();
+  
   sketch.setupMonster(true); 
   GUI.setSketch(&_defaultSketch);
   GUI.setPage(&sketchSwitchPage);
