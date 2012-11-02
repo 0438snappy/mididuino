@@ -1,4 +1,4 @@
-#define MNM_AUTO_PAGES_CNT 1
+#define MNM_AUTO_PAGES_CNT 4
 
 class MNMLiveSketch : 
 public Sketch, public MNMCallback, public ClockCallback, public MidiCallback {
@@ -7,22 +7,21 @@ public:
   SwitchPage switchPage;
 
   void setupPages() {
+    switchPage.initPages(NULL, NULL, NULL, NULL);
+    switchPage.parent = this;
     for (int i = 0; i < MNM_AUTO_PAGES_CNT; i++) {
       autoMNMPages[i].setup();
       autoMNMPages[i].setShortName("  ");
       autoMNMPages[i].shortName[2] = '0' + i + 1;
+      switchPage.pages[i] = &autoMNMPages[i];
     }
-
-//    switchPage.initPages(&autoMNMPages[0], &autoMNMPages[1], &autoMNMPages[2], &autoMNMPages[3]);
-    switchPage.initPages(&autoMNMPages[0], NULL, NULL, NULL);
-    switchPage.parent = this;
   }
 
   virtual void setup() {
     setupPages();
-//    MNMTask.addOnKitChangeCallback(this, (mnm_callback_ptr_t)&MNMLiveSketch::onKitChanged);    
     ccHandler.setup();
     setPage(&autoMNMPages[0]);
+//    MNMTask.addOnKitChangeCallback(this, (mnm_callback_ptr_t)&MNMLiveSketch::onKitChanged);        
 //    Midi.addOnNoteOnCallback(this, (midi_callback_ptr_t)&MNMLiveSketch::on3ByteCallback);
 //    Midi.addOnNoteOffCallback(this, (midi_callback_ptr_t)&MNMLiveSketch::on3ByteCallback); 
 //    Midi.addOnProgramChangeCallback(this, (midi_callback_ptr_t)&MNMLiveSketch::on2ByteCallback);   

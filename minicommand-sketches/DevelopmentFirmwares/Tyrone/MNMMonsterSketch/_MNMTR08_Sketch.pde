@@ -9,7 +9,7 @@
 #define NOTE_SPREAD_SUM_MAX_NUMBER_ELEMENTS (NOTE_SPREAD_MAX_NUMBER_ELEMENTS - 1)
 #define NOTE 0
 #define CHANNEL 1
-#define NUM_SCALES 18
+#define NUM_SCALES 18  // have commented out 3 scales to reduce sketch size
 
 typedef enum {
   MODE_TRANSPOSE,
@@ -52,10 +52,9 @@ public:
   ScaleEncoder scaleEncoder;
   NotePitchEncoder basePitchEncoder;
   static const scale_t *scales[NUM_SCALES];
-  uint8_t scaleCount, basePitch;
+  uint8_t basePitch;
   bool forceToScaleEnabled;
   const scale_t *currentScale;
-
 
   MNMTransposeSketch() 
   {
@@ -77,7 +76,7 @@ public:
     Midi2.addOnNoteOnCallback(this, (midi_callback_ptr_t)&MNMTransposeSketch::onNoteOnCallback);
     Midi2.addOnProgramChangeCallback(this, (midi_callback_ptr_t)&MNMTransposeSketch::onProgramChangeCallback);
     Midi2.addOnNoteOffCallback(this, (midi_callback_ptr_t)&MNMTransposeSketch::onNoteOffCallback);  
-    Midi.addOnControlChangeCallback(this, (midi_callback_ptr_t)&MNMTransposeSketch::onControlChange);        
+//    Midi.addOnControlChangeCallback(this, (midi_callback_ptr_t)&MNMTransposeSketch::onControlChange);        
   }
   
   void setupEnsemblePoly(){
@@ -108,10 +107,11 @@ public:
   
   void setupForceToScale(){
       forceToScaleEnabled = false;
+      currentScale = scales[0];      
       scaleEncoder.scales = scales;
       scaleEncoder.numScales = NUM_SCALES;     
       scaleEncoder.initRangeEncoder(0, NUM_SCALES, "SCL"); 
-
+      basePitch = MIDI_NOTE_C3;
       basePitchEncoder.setName("BAS");
       scaleConfigPage.setEncoders(&modeEncoder, &scaleEncoder, &basePitchEncoder, NULL);      
       scaleConfigPage.setShortName("SCL"); 
@@ -319,25 +319,28 @@ public:
     MidiUart.sendNoteOff(channel, note, velocity);
   }
   
-  void onControlChange(uint8_t *msg) {
-        
-        uint8_t channel = MIDI_VOICE_CHANNEL(msg[0]);
-        uint8_t cc = msg[1];
-        uint8_t value = msg[2];
-        uint8_t mnmTrack, mnmParam;
-        if (MNM.parseCC(channel, cc, &mnmTrack, &mnmParam)){
-                                            
-            // Update the internal representation of the kit data
-            MNM.kit.parameters[mnmTrack][mnmParam] = value;
-            return;
-        
-        } 
-         
-        // If we haven't already returned, echo the message out on the same midi channel
-        // CHECK FOR CONFLICTS WITH OTHER SKETCHES...
-        //MidiUart.sendMessage(msg[0], msg[1], msg[2]);
-       
-  }
+  
+//  HAVE REMOVED THIS AS IT BREAKS MNM LIVE REVERT TO KIT/TRACK  
+//
+//  void onControlChange(uint8_t *msg) {
+//        
+//        uint8_t channel = MIDI_VOICE_CHANNEL(msg[0]);
+//        uint8_t cc = msg[1];
+//        uint8_t value = msg[2];
+//        uint8_t mnmTrack, mnmParam;
+//        if (MNM.parseCC(channel, cc, &mnmTrack, &mnmParam)){
+//                                            
+//            // Update the internal representation of the kit data
+//            MNM.kit.parameters[mnmTrack][mnmParam] = value;
+//            return;
+//        
+//        } 
+//         
+//        // If we haven't already returned, echo the message out on the same midi channel
+//        // CHECK FOR CONFLICTS WITH OTHER SKETCHES...
+//        //MidiUart.sendMessage(msg[0], msg[1], msg[2]);
+//       
+//  }
   
   void onProgramChangeCallback(uint8_t *msg){
       MidiUart.sendMessage(msg[0], msg[1]);  
