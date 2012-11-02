@@ -29,26 +29,26 @@ public:
     }
   }   
 
-  virtual void mute(bool pressed) {
-    if (pressed) {
-      muted = !muted;
-      if (muted) {
-        GUI.flash_strings_fill("TETRA EDITOR:", "MUTED");
-      } 
-      else {
-        GUI.flash_strings_fill("TETRA EDITOR:", "UNMUTED");
-      }
-    }
-  }  
+//  virtual void mute(bool pressed) {
+//    if (pressed) {
+//      muted = !muted;
+//      if (muted) {
+//        GUI.flash_strings_fill("TETRA:", "MUTED");
+//      } 
+//      else {
+//        GUI.flash_strings_fill("TETRA:", "UNMUTED");
+//      }
+//    }
+//  }  
 
-  virtual Page *getPage(uint8_t i) {
-    if (i == 0) {
-      return &tetraEditorPage;
-    } 
-    else {
-      return NULL;
-    }
-  }  
+//  virtual Page *getPage(uint8_t i) {
+//    if (i == 0) {
+//      return &tetraEditorPage;
+//    } 
+//    else {
+//      return NULL;
+//    }
+//  }  
 
 
   virtual bool handleEvent(gui_event_t *event) {      

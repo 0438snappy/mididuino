@@ -3,14 +3,13 @@
 #include <MNM.h>
 #include <Scales.h>
 
-#define MNM_TRANSPOSE_INPUT_MIDI_CHANNEL (16 - 1)  // Midi Channel 16
+#define CONTROL_INPUT_MIDI_CHANNEL (16 - 1)  // Midi Channel 16
 #define MAX_NUMBER_NOTES 4
 #define NOTE_SPREAD_MAX_NUMBER_ELEMENTS (MAX_NUMBER_NOTES - 1)
 #define NOTE_SPREAD_SUM_MAX_NUMBER_ELEMENTS (NOTE_SPREAD_MAX_NUMBER_ELEMENTS - 1)
-#define TRANSPOSED_NOTES_BUFFER_COUNT 64
 #define NOTE 0
 #define CHANNEL 1
-#define NUM_SCALES 21
+#define NUM_SCALES 18
 
 typedef enum {
   MODE_TRANSPOSE,
@@ -25,9 +24,7 @@ class MNMTransposeSketch : public Sketch, public MidiCallback{
 public:
   bool muted;
   EnumEncoder modeEncoder;
-  RangeEncoder controlMidiChannelEncoder;
   mode_t mode;
-  uint8_t controlMidiChannel;
   SwitchPage switchPage;
   static const char *modeNames[MODE_COUNT];
   static const char *modeLongNames[MODE_COUNT];
@@ -38,14 +35,14 @@ public:
   uint8_t orderedNotes[MAX_NUMBER_NOTES];
   uint8_t noteSpread[NOTE_SPREAD_MAX_NUMBER_ELEMENTS];
   uint8_t noteSpreadSum[NOTE_SPREAD_SUM_MAX_NUMBER_ELEMENTS];
-  uint8_t numberNotes, track, rootNoteIndex;
+  uint8_t numberNotes, rootNoteIndex;
+  int track;
   bool ensemblePolyModeEnabled, resetEnsembleParamsEnabled, justIntonationEnabled, sendNoteOnEnabled;
   
   // Transpose objects
   EncoderPage transposeConfigPage;
   RangeEncoder transposeAmountEncoder;
   BoolEncoder transposeEnabledEncoder;
-  uint8_t transposedNotes[2][TRANSPOSED_NOTES_BUFFER_COUNT];
   int transposeAmount;
   uint8_t numberTransposedNotes;
   bool transposeEnabled;
@@ -75,9 +72,7 @@ public:
     setupMnmTranspose();
     setupForceToScale();
     modeEncoder.initEnumEncoder(modeNames, (int)MODE_COUNT, "0-|");
-    controlMidiChannel = MNM_TRANSPOSE_INPUT_MIDI_CHANNEL;
-    controlMidiChannelEncoder.initRangeEncoder(16, 1, "CHN", (controlMidiChannel + 1));    
-    switchPage.initPages(&transposeConfigPage, &scaleConfigPage, &ensemblePolyConfigPage, NULL);
+    switchPage.initPages(&transposeConfigPage, &scaleConfigPage, &ensemblePolyConfigPage, NULL);    
     switchPage.parent = this;    
     Midi2.addOnNoteOnCallback(this, (midi_callback_ptr_t)&MNMTransposeSketch::onNoteOnCallback);
     Midi2.addOnProgramChangeCallback(this, (midi_callback_ptr_t)&MNMTransposeSketch::onProgramChangeCallback);
@@ -105,14 +100,9 @@ public:
   void setupMnmTranspose(){
       transposeEnabled = true;    
       transposeAmount = 0;
-      for (int i = 0; i < 2; i++) {
-          for (int j = 0; j < TRANSPOSED_NOTES_BUFFER_COUNT; j++) {
-              transposedNotes[i][j] = 128;
-          }
-      }
       transposeEnabledEncoder.initBoolEncoder("TRN", transposeEnabled);      
       transposeAmountEncoder.initRangeEncoder(-63, 63, "AMT", transposeAmount);
-      transposeConfigPage.setEncoders(&modeEncoder, &transposeAmountEncoder, NULL, &controlMidiChannelEncoder);
+      transposeConfigPage.setEncoders(&modeEncoder, &transposeAmountEncoder, NULL, NULL);      
       transposeConfigPage.setShortName("TRN");      
   }
   
@@ -123,7 +113,7 @@ public:
       scaleEncoder.initRangeEncoder(0, NUM_SCALES, "SCL"); 
 
       basePitchEncoder.setName("BAS");
-      scaleConfigPage.setEncoders(&modeEncoder, &scaleEncoder, &basePitchEncoder, &controlMidiChannelEncoder);
+      scaleConfigPage.setEncoders(&modeEncoder, &scaleEncoder, &basePitchEncoder, NULL);      
       scaleConfigPage.setShortName("SCL"); 
   }
 
@@ -143,35 +133,25 @@ public:
         GUI.setLine(GUI.LINE1);    
         GUI.flash_strings_fill("MODE:", modeLongNames[mode]);                  
     }   
-    if (controlMidiChannelEncoder.hasChanged()) {
-        controlMidiChannel = controlMidiChannelEncoder.getValue() - 1;
-//        GUI.flash_string_fill("CTRL MIDI CHAN");                          
-    }  
     if (transposeAmountEncoder.hasChanged()) {
         transposeAmount = transposeAmountEncoder.getValue();
-//        GUI.flash_string_fill("TRANSPOSE AMT");             
     }  
     if (resetEnsembleParamsEnabledEncoder.hasChanged()) {
-        resetEnsembleParamsEnabled = resetEnsembleParamsEnabledEncoder.getValue();
-//        GUI.flash_string_fill("RESET ENS PARAMS");                                          
+        resetEnsembleParamsEnabled = resetEnsembleParamsEnabledEncoder.getValue();                                  
     }
     if (justIntonationEnabledEncoder.hasChanged()) {
-        justIntonationEnabled = justIntonationEnabledEncoder.getValue();
-//        GUI.flash_string_fill("JUST INTONATION");                                                  
+        justIntonationEnabled = justIntonationEnabledEncoder.getValue();                   
     }
     if (sendNoteOnEnabledEncoder.hasChanged()) {
-        sendNoteOnEnabled = sendNoteOnEnabledEncoder.getValue();
-//        GUI.flash_string_fill("SEND NOTE ONS");                                                  
+        sendNoteOnEnabled = sendNoteOnEnabledEncoder.getValue();                           
     }    
     if (scaleEncoder.hasChanged()) {
         currentScale = scaleEncoder.getScale();
         setAllNotesOff();        
-//        GUI.flash_strings_fill("CURRENT SCALE:", currentScale->name);  
     }
     if (basePitchEncoder.hasChanged()){
         basePitch = basePitchEncoder.getValue();
         setAllNotesOff();
-//        GUI.flash_string_fill("BASE PITCH");
     }
   }      
   
@@ -207,31 +187,31 @@ public:
     }
   }    
 
-  virtual void mute(bool pressed) {
-    if (pressed) {
-      muted = !muted;
-      if (muted) {
-          transposeEnabled = muted;
-          ensemblePolyModeEnabled = muted;
-          forceToScaleEnabled = muted;
-          GUI.flash_strings_fill("MNM TRANSPOSE:", "MUTED");                
-      } else {
-          GUI.flash_strings_fill("MNM TRANSPOSE:", "UNMUTED");         
-      }
-    }
-  }  
+//  virtual void mute(bool pressed) {
+//    if (pressed) {
+//      muted = !muted;
+//      if (muted) {
+//          transposeEnabled = muted;
+//          ensemblePolyModeEnabled = muted;
+//          forceToScaleEnabled = muted;
+//          GUI.flash_strings_fill("MNM TRN:", "MUTED");                
+//      } else {
+//          GUI.flash_strings_fill("MNM TRN:", "UNMUTED");         
+//      }
+//    }
+//  }  
 
-  virtual Page *getPage(uint8_t i) {
-    if (i == 0) {
-        return &transposeConfigPage;
-    } else if (i == 1) {
-        return &scaleConfigPage;
-    } else if (i == 2){
-        return &ensemblePolyConfigPage;
-    } else {
-      return NULL;
-    }
-  }  
+//  virtual Page *getPage(uint8_t i) {
+//    if (i == 0) {
+//        return &transposeConfigPage;
+//    } else if (i == 1) {
+//        return &scaleConfigPage;
+//    } else if (i == 2){
+//        return &ensemblePolyConfigPage;
+//    } else {
+//      return NULL;
+//    }
+//  }  
 
   bool handleEvent(gui_event_t *event) {       
     if (EVENT_PRESSED(event, Buttons.BUTTON1)) {
@@ -250,7 +230,7 @@ public:
     uint8_t velocity = msg[2];
 
     // FILTER FOR CONTROL MIDI CHANNEL      
-    if (channel == controlMidiChannel) { 
+    if (channel == CONTROL_INPUT_MIDI_CHANNEL) { 
         if(transposeEnabled){
             
             // Set the transpose amount
@@ -259,14 +239,7 @@ public:
             
             // Ensure all transposed notes are turned off
             setAllNotesOff();            
-            
-            // Flash a message to the screen        
-//            GUI.setLine(GUI.LINE2);
-//            if (transposeAmount >=0){
-//                GUI.flash_printf_fill("TRANSPOSE: %b", transposeAmount);   
-//            } else {
-//                GUI.flash_printf_fill("TRANSPOSE:-%b", ABS(transposeAmount));  
-//            }            
+                     
             return;       
         }  
    
@@ -289,24 +262,18 @@ public:
           if (sendNoteOnEnabled){
               MNM.sendNoteOn(track, orderedNotes[rootNoteIndex], 127);   
           }
-//          GUI.setLine(GUI.LINE2);
-//          GUI.flash_printf_fill("ROOT NOTE: %b", orderedNotes[rootNoteIndex]);  
           return;
         } 
     } 
     
     // Do Transpose
-    // Keep track of note in array as we may need to "force" a note off for it later    
     if(transposeEnabled){
         note += transposeAmount;        
-        addNoteOnToArray(note, channel);        
     }
     
     // Force To Scale
-    // Keep track of note in array as we may need to "force" a note off for it later
     if(forceToScaleEnabled){
         note = scalePitch(note, basePitch, currentScale->pitches);        
-        addNoteOnToArray(note, channel);        
     }    
         
     // If we haven't already done something and returned, then send out the message;
@@ -339,17 +306,13 @@ public:
     }
 
     // Do Transpose  
-    // Keep track of transposed note in array as we may need to "force" a note off for it later  
     if(transposeEnabled){        
         note += transposeAmount;
-        removeNoteOnFromArray(note, channel);
     } 
     
     // Force To Scale
-    // Keep track of note in array as we may need to "force" a note off for it later
     if(forceToScaleEnabled){
         note = scalePitch(note, basePitch, currentScale->pitches);        
-        removeNoteOnFromArray(note, channel);        
     }      
 
     // If we haven't already done something and returned, then send out the message;
@@ -400,70 +363,17 @@ public:
     numberNotes++;
     sortEnsembleNotesAscending();           
   }
-  
-  void addNoteOnToArray(uint8_t _note, uint8_t _channel){
-
-    //  Do nothing if note already exists in the Array
-    for (int i = 0; i < TRANSPOSED_NOTES_BUFFER_COUNT; i++) {
-        if ((transposedNotes[NOTE][i] == _note) && (transposedNotes[CHANNEL][i] == _channel)) {
-            return;
-        }
-    }
-
-    // If at maximum number of allowed notes, then clear the oldest
-    if (numberTransposedNotes == TRANSPOSED_NOTES_BUFFER_COUNT) {
-        uint8_t note = transposedNotes[NOTE][0];
-        uint8_t channel = transposedNotes[CHANNEL][0];      
-        MidiUart.sendNoteOff(channel, note, 1);
-        transposedNotes[NOTE][0] = 128;
-        transposedNotes[CHANNEL][0] = 128;
-        numberTransposedNotes--;
-    }
-
-    transposedNotes[NOTE][numberTransposedNotes] = _note;
-    transposedNotes[CHANNEL][numberTransposedNotes] = _channel;
-    numberTransposedNotes++;      
-  }
-  
+    
   void setAllNotesOff(){
-     for (int i = 0; i < TRANSPOSED_NOTES_BUFFER_COUNT; i++) {
-         uint8_t note = transposedNotes[NOTE][i];
-         uint8_t channel = transposedNotes[CHANNEL][i];
-         if (note < 128){
-             MidiUart.sendNoteOff(channel, note, 1);
-         }
-         transposedNotes[NOTE][i] = 128;
-         transposedNotes[CHANNEL][i] = 128;
+     for (int i = 0; i < 16; i++) {
+          track = i - MNM.global.baseChannel;     
+          // Send CC #120 for MNM tracks, otherwise CC #123 
+          if ((track <= 5) && (track >= 0)){
+              MidiUart.sendCC(i, 120, 1); 
+          } else {
+              MidiUart.sendCC(i, 123, 1);                 
+          }
      }
-     numberTransposedNotes = 0;
-  }
-  
-  void removeNoteOnFromArray(uint8_t _note, uint8_t _channel){
-    for (int i = 0; i < TRANSPOSED_NOTES_BUFFER_COUNT; i++) {      
-        if ((transposedNotes[NOTE][i] == _note) && (transposedNotes[CHANNEL][i] == _channel)) {
-            transposedNotes[NOTE][i] = 128;
-            transposedNotes[CHANNEL][i] = 128;
-            reorderTransposedNotes();
-            numberTransposedNotes--;
-            break;   
-        }            
-    }
-  }
-  
-  void reorderTransposedNotes(){
-
-    uint8_t write = 0;
-    for (int i = 0; i < TRANSPOSED_NOTES_BUFFER_COUNT; i++) {
-      if (transposedNotes[NOTE][i] != 128) {
-        transposedNotes[NOTE][write] = transposedNotes[NOTE][i];
-        transposedNotes[CHANNEL][write] = transposedNotes[CHANNEL][i];
-        if (i != write){
-            transposedNotes[NOTE][i] = 128;
-            transposedNotes[CHANNEL][i] = 128;
-        }
-        write++;
-      }
-    }
   }
 
   void removeEnsembleNote(uint8_t _note){
@@ -741,33 +651,12 @@ public:
     }
 
   }
-
-
-//  void setTrackContainsEnsembleMachine(uint8_t _channel){
-//
-//    track = 127;
-//    trackContainsEnsembleMachine = false;
-//
-//    if (_channel == MNM.global.autotrackChannel){
-//      // MNM.currentTrack is updated every 3 secs by MNMTask.  Not safe to use MNM.getCurrentTrack() here as the lag in processing results in "dropped" noteOn / noteOff messages
-//      track = MNM.currentTrack;    
-//    } 
-//    else {
-//      track = _channel - MNM.global.baseChannel;
-//    }
-//
-//    if (track <= 5){
-//      if (MNM.kit.models[track] == MNM_SWAVE_ENS_MODEL || MNM.kit.models[track] == MNM_DPRO_DENS_MODEL){
-//        trackContainsEnsembleMachine = true; 
-//      }
-//    }                        
-//  }
   
   bool trackContainsEnsembleMachine(uint8_t _channel){
 
       track = _channel - MNM.global.baseChannel;
       
-      if (track <= 5){
+      if ((track <= 5) && (track >= 0)){
           if (MNM.kit.models[track] == MNM_SWAVE_ENS_MODEL || MNM.kit.models[track] == MNM_DPRO_DENS_MODEL){
               return true; 
           } else {
@@ -797,25 +686,25 @@ const scale_t *MNMTransposeSketch::scales[NUM_SCALES] = {
     &suspendedPentatonicScale,
     &inSenScale,
   
-    &majorBebopScale,
-    &dominantBebopScale,
-    &minorBebopScale,
+//    &majorBebopScale,
+//    &dominantBebopScale,
+//    &minorBebopScale,
   
     &majorArp,
     &minorArp,
     &majorMaj7Arp,
     &majorMin7Arp,
-    &minorMin7Arp,
+    &minorMin7Arp
 };
 
 const char *MNMTransposeSketch::modeNames[MODE_COUNT] = {
-      "TRN ", 
-      "SCL ", 
-      "ENS "
+      "TRN", 
+      "SCL", 
+      "ENS"
 };
 
 const char *MNMTransposeSketch::modeLongNames[MODE_COUNT] = {
       "TRANSPOSE", 
-      "FORCE TO SCALE ", 
+      "FORCE TO SCALE", 
       "ENSEMBLE POLY"
 };
