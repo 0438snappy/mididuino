@@ -51,10 +51,11 @@ extern "C" {
 	
   void m_memcpy(void *dst, const void *src, uint16_t cnt);
   void m_memset(void *dst, uint16_t cnt, uint8_t elt);
-  void m_strncpy(void *dst, const char *src, uint16_t cnt);
+  void m_strncpy(void *dst, const char *src, uint16_t cnt);  
   void m_strncpy_fill(void *dst, const char *src, uint16_t cnt);
   void m_memcpy_p(void *dst, PGM_P src, uint16_t cnt);
   void m_strncpy_p(void *dst, PGM_P src, uint16_t cnt);
+  void m_strncat_p(void *dst, PGM_P src1, PGM_P src2, uint16_t cnt);
   void m_strncpy_p_fill(void *dst, PGM_P src, uint16_t cnt);
   void m_memclr(void *dst, uint16_t cnt);
   void m_str16cpy_fill(void *dst, const char *src);

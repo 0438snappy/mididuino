@@ -207,6 +207,33 @@ void m_strncpy_p(void *dst, PGM_P src, uint16_t cnt) {
   }
 }
 
+/** Concatenate cnt bytes from program space src1 & src2 to dst. **/
+void m_strncat_p(void *dst, PGM_P src1, PGM_P src2, uint16_t cnt) {
+  while (cnt) {
+    char byte = pgm_read_byte(src1);
+    if (byte == 0)
+      break;
+    *((uint8_t *)dst++) = byte;
+    src1++;
+    cnt--;
+  }  
+  
+  *((uint8_t *)dst++) = ' ';
+  cnt--;
+      
+  while (cnt) {
+    char byte = pgm_read_byte(src2);
+    if (byte == 0)
+      break;
+    *((uint8_t *)dst++) = byte;
+    src2++;
+    cnt--;
+  }
+  if (cnt > 0) {
+    *((uint8_t *)dst++) = 0;
+  }
+}
+
 /** Copy cnt bytes from program space src to dst, and fill up with spaces. **/
 void m_strncpy_p_fill(void *dst, PGM_P src, uint16_t cnt) {
   while (cnt) {
