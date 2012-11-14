@@ -59,13 +59,11 @@ class TetraNRPNEncoder : public NRPNEncoder {
   	
 public:
   /** Encoder Long name. **/
-  const char *longName;
+  char longName[16];
   uint8_t paramNumber;
 
   /** Set the encoder long name (max 16 characters). **/
-  virtual void setLongName(const char *_longName){
-        longName = _longName;
-  }  
+  virtual void setLongName(const char *_longName);
   
   virtual void init() {
     paramNumber = 255;
@@ -76,27 +74,7 @@ public:
     clear();
   }    
   
-  /** Set the encoder long name (max 16 characters). **/
-  virtual void setLongName(const char *_groupName, const char *_paramName){
-  		uint8_t cnt = 16;
-		  while (cnt && *_groupName) {
-		    *((uint8_t *)longName++) = *((uint8_t *)_groupName++);
-		    cnt--;
-		  }
-		  /*
-		  if (cnt > 1) {
-		    cnt--;
-		    *((uint8_t *)longName++) = ' ';
-		  }
-		  while (cnt && *_paramName) {
-		    *((uint8_t *)longName++) = *((uint8_t *)_paramName++);
-		    cnt--;
-		  }
-		  if (cnt > 0){
-		    *((uint8_t *)longName++) = 0;
-		  }
-		  */
-  }    
+  void initTETRAEncoder(uint8_t _param);
   
   virtual void displayAt(int i){
           

@@ -13,14 +13,19 @@ typedef enum {
   TETRA_PARAMETER_PROPERTY_COUNT
 } tetra_parameter_properties_t;
 
+/** Store the name of a Tetra parameter **/
+typedef struct tetra_parameter_name_s {
+  char name[4];
+  uint8_t parameterNumber;
+} tetra_parameter_name_t;
+
 /** Store the details of a Tetra parameter **/
-typedef struct tetra_parameter_s {
+typedef struct tetra_parameter_detail_s {
   uint8_t parameterNumber;
   uint8_t nrpn;  
-  const char name[4];
   uint8_t min;
   uint8_t max;
-} tetra_parameter_t;
+} tetra_parameter_detail_t;
 
 /** Store the "longname group" details of a Tetra parameter **/
 typedef struct tetra_parameter_groupname_s {

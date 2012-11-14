@@ -19,7 +19,7 @@ class TETRAClass {
   TETRAClass();
 
   uint8_t midiChannel;
-  bool loadedMidiChannel;
+  bool loadedGlobal;
   
   int currentProgram;
   bool loadedProgram;
@@ -30,9 +30,9 @@ class TETRAClass {
   void sendRequest(uint8_t type);
   void requestProgramEditBuffer();
   
-  uint8_t getParameterNrpn(uint8_t parameterNumber);    
-  static const char* getParameterName(uint8_t parameterNumber);  
-  static const char* getParameterGroupName(uint8_t parameterNumber);    
+  uint8_t getParameterNrpn(uint8_t parameterNumber);     
+  static PGM_P getParameterName(uint8_t parameterNumber);  
+  static PGM_P getParameterGroupName(uint8_t parameterNumber);      
   uint8_t getParameterMin(uint8_t parameterNumber);    
   uint8_t getParameterMax(uint8_t parameterNumber);        
 

@@ -4,9 +4,9 @@
 #include "TETRA.h"
 
 TETRAClass::TETRAClass() {
-  midiChannel = (15 - 1);
+  midiChannel = (15 - 1);  //HARDCODED AWESOMENESS :-)
   currentProgram = -1;
-  loadedProgram = loadedMidiChannel = false;
+  loadedProgram = loadedGlobal = false;
 }
 
 void TETRAClass::sendSysex(uint8_t *bytes, uint8_t cnt) {

@@ -123,6 +123,7 @@ DATA_ENCODER_RETURN_TYPE TETRASysexDecoder::get8(uint8_t *c) {
   }
 
   DATA_ENCODER_CHECK(getNextByte(&byte));
+  
 //  printf("%x (%c)\n", byte, byte);
 /*
   if (IS_BIT_SET(byte, 7)) {
