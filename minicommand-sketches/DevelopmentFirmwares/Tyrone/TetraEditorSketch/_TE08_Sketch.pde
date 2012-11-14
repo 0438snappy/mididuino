@@ -1,22 +1,26 @@
-
-
 class TetraEditorSketch : 
 public Sketch{  
 
 public:
   bool muted;
   TetraEditorPage tetraEditorPage;  
+  AutoNRPNEncoderPage autoNRPNPages[NRPN_AUTO_PAGES_CNT]; 
   SwitchPage switchPage;
 
-  TetraEditorSketch() : 
-  tetraEditorPage(){
-
+  TetraEditorSketch() 
+  {
   }  
 
   void setupPages(){
+
+    // Set up Tetra Editor pages
+    pageIndex = 0;    
     tetraEditorPage.setup();
     tetraEditorPage.setShortName("TET");
-    
+    tetraParameterAssignPage.setup();    
+
+    // Set up Tetra Auto Encoder pages    
+    tetraParameterSelectPage.setup();    
     for (int i = 0; i < NRPN_AUTO_PAGES_CNT; i++) {
       autoNRPNPages[i].setup();
       autoNRPNPages[i].setShortName("A ");
@@ -26,10 +30,8 @@ public:
     
     switchPage.initPages(&autoNRPNPages[0], &autoNRPNPages[1], &autoNRPNPages[2], &tetraEditorPage);
 //    switchPage.initPages(&tetraEditorPage, &autoNRPNPages[0], NULL, NULL);    
+//    switchPage.initPages(&tetraEditorPage, NULL, NULL, NULL);     
     switchPage.parent = this;        
-    
-    tetraParameterSelectPage.setup();
-    tetraParameterAssignPage.setup();
   }
 
   void getName(char *n1, char *n2) {
@@ -40,10 +42,6 @@ public:
   void setup() {
     muted = false;
     setupPages();
-  }
-  
-  void assignAutoEncoder(uint8_t targetPageIndex, uint8_t targetEncoderIndex, Encoder *enc){
-    
   }
 
   virtual void show() {
@@ -64,6 +62,10 @@ public:
   virtual void mute(bool pressed) {
     if (pressed) {
       muted = !muted;
+      // Set muted on Auto NRPN pages
+      for (int i = 0; i < NRPN_AUTO_PAGES_CNT; i++) {
+        autoNRPNPages[i].muted = muted;
+      }
       if (muted) {
         GUI.flash_strings_fill("TETRA EDITOR:", "MUTED");
       } 
@@ -93,8 +95,6 @@ public:
     }          
     return false;
   }   
-
-
 
 };
 
