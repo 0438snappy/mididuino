@@ -1,12 +1,14 @@
 //
 //  TOP LEVEL SKETCH
 //
-#include <MidiClockPage.h>
+//#include <MidiClockPage.h>
+#include <Merger.h>
+Merger merger;
 MNMTransposeSketch sketch;
 TetraEditorSketch sketch2;
 MNMLiveSketch sketch3;
 SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, &sketch3, NULL);
-//SketchSwitchPage sketchSwitchPage(NULL, &sketch, NULL, NULL, NULL);
+//SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, NULL, NULL);
 
 void setup() {
   initMNMTask();
@@ -17,7 +19,15 @@ void setup() {
   GUI.setPage(&sketchSwitchPage);
   GUI.addEventHandler(handleEvent);
 
-  initClockPage();
+  // Can't afford the space for a midiclock page, so manually set MidiClock settings...
+//  initClockPage();
+  MidiClock.stop();
+  MidiClock.mode = MidiClock.EXTERNAL_MIDI;
+  MidiClock.transmit = false;
+  MidiClock.useImmediateClock = true;
+  merger.setMergeMask(7); //MERGE_ALL
+  MidiClock.start();
+
 }
 
 bool handleEvent(gui_event_t *event) {
