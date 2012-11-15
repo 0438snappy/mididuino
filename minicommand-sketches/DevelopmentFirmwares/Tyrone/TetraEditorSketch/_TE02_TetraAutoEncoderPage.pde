@@ -65,7 +65,7 @@ class TetraParameterSelectPage : public EncoderPage {
             GUI.setLine(GUI.LINE2); 
             for (int i=0; i<4; i++){
               uint8_t idx;
-              idx = tetraEditorPages[pageIndex].parameterNumbers[i];
+              idx = TETRAEditor.currentPage->parameterNumbers[i];
               if (idx != 0xFF){
                   PGM_P name= NULL;     
                   name = TETRA.getParameterName(idx);
@@ -76,7 +76,7 @@ class TetraParameterSelectPage : public EncoderPage {
  
        void setEditorPage(){             
             GUI.setLine(GUI.LINE1);
-            GUI.flash_string_fill(tetraEditorPages[pageIndex].longname);                        
+            GUI.flash_string_fill(TETRAEditor.currentPage->longname);                        
             redisplayPage ();           
         }       
         
@@ -98,14 +98,14 @@ class TetraParameterSelectPage : public EncoderPage {
             // 
             // Pressing Button 2 (bottom left) displays "previous" editor page
             if (EVENT_PRESSED(event, Buttons.BUTTON2)) {
-                pageIndex = mod(pageIndex-1, NUM_TETRA_EDITOR_PAGES);
+                TETRAEditor.setPageDown();
                 setEditorPage ();
                 return true;
             }  
             
             // Pressing Button 3 (bottom right) displays "next" editor page
             if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
-                pageIndex = mod(pageIndex + 1, NUM_TETRA_EDITOR_PAGES);
+                TETRAEditor.setPageUp();
                 setEditorPage ();
                 return true;
             } 
@@ -196,7 +196,7 @@ void AutoNRPNEncoderPage::clearEncoder(uint8_t i) {
 void AutoNRPNEncoderPage::learnEncoder(uint8_t target_idx, uint8_t source_idx) {
 
     uint8_t idx;
-    idx = tetraEditorPages[pageIndex].parameterNumbers[source_idx];
+    idx = TETRAEditor.currentPage->parameterNumbers[source_idx];
     if (idx != 0xFF){
         realEncoders[target_idx].initTETRAEncoder(idx);
     }

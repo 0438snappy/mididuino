@@ -14,7 +14,6 @@ public:
   void setupPages(){
 
     // Set up Tetra Editor pages
-    pageIndex = 0;    
     tetraEditorPage.setup();
     tetraEditorPage.setShortName("TET");
     tetraParameterAssignPage.setup();    
