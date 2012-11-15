@@ -42,6 +42,7 @@ extern TETRAClass TETRA;
 
 //#include "DSI.hh"
 #include "TETRASysex.hh"
+#include "TETRAEditor.hh"
 //#include "TETRATask.hh"
 
 #endif /* TETRA_H__ */
