@@ -6,9 +6,9 @@
 Merger merger;
 MNMTransposeSketch sketch;
 TetraEditorSketch sketch2;
-MNMLiveSketch sketch3;
+AutoEncoderSketch sketch3;
 SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, &sketch3, NULL);
-//SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, NULL, NULL);
+
 
 void setup() {
   initMNMTask();

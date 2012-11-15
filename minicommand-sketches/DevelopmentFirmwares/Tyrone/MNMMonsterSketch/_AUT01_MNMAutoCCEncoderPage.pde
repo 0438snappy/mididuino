@@ -5,6 +5,7 @@
 #include "CCHandler.h"
 #include "RecordingEncoder.hh"
 
+#define MNM_AUTO_PAGES_CNT 1
 
 /**
  * Creates a page feature 4 encoders that can be configured using a
@@ -22,7 +23,7 @@
 class AutoCCEncoderPage : public EncoderPage, public ClockCallback {
  public:
   MNMEncoder realEncoders[4];
-  const static int RECORDING_LENGTH = 32; // recording length in 32th
+  const static int RECORDING_LENGTH = 64; // recording length in 32th
   RecordingEncoder<RECORDING_LENGTH> recEncoders[4];
 
   bool muted;
@@ -193,7 +194,7 @@ bool AutoCCEncoderPage::handleEvent(gui_event_t *event) {
       for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
         if (EVENT_PRESSED(event, i)) {
             GUI.setLine(GUI.LINE1);
-            GUI.flash_string_fill("LEARN CC:");
+            GUI.flash_string_fill("LEARN ENC:");
             GUI.setLine(GUI.LINE2);
             GUI.flash_put_value(0, i + 1);      
       	    learnEncoder(i);
@@ -203,10 +204,13 @@ bool AutoCCEncoderPage::handleEvent(gui_event_t *event) {
     
       // Button 4 + Button 2 = assign last 4 incoming CCs to Encoders  
       if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
-        GUI.flash_strings_fill("LEARN", "LAST 4 CCs");
+        GUI.flash_strings_fill("AUTO LEARN", "LAST 4 CCs");
         autoLearnLast4();
         return true;
       }
+      
+      GUI.setLine(GUI.LINE1);
+      GUI.flash_string_fill("CHOOSE ENC:");      
   }
   
   /*
@@ -217,12 +221,12 @@ bool AutoCCEncoderPage::handleEvent(gui_event_t *event) {
   if (BUTTON_UP(Buttons.BUTTON3)) {
      if (BUTTON_UP(Buttons.BUTTON4)) {
         if (EVENT_PRESSED(event, Buttons.BUTTON2)) {
-          GUI.flash_strings_fill("REC ON", "");
+          GUI.flash_strings_fill("REC MODE ON", "");
           startRecording();
           return true;
         }
         if (EVENT_RELEASED(event, Buttons.BUTTON2)) {
-          GUI.flash_strings_fill("REC OFF", "");
+          GUI.flash_strings_fill("REC MODE OFF", "");
           stopRecording();
           return true;
         }
@@ -252,7 +256,7 @@ bool AutoCCEncoderPage::handleEvent(gui_event_t *event) {
         for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
           if (EVENT_PRESSED(event, i)) {
             GUI.setLine(GUI.LINE1);
-            GUI.flash_string_fill("CLEAR CC:");
+            GUI.flash_string_fill("CLEAR ENC:");
             GUI.setLine(GUI.LINE2);
             GUI.flash_put_value(0, i + 1);
             clearEncoder(i);            
