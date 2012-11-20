@@ -38,6 +38,40 @@
 
 #define MIDI_NOTE_C3 ((3 * 12) + 0)
 
+
+class OctatrackLiveSketch;
+
+/* A customized SwitchPage that also updates the ParentSketch.activeCaPage variable after selecting a Page  */
+class OTLiveSwitchPage : public SwitchPage{
+  
+    public:    
+    OctatrackLiveSketch *parent;
+    
+    OTLiveSwitchPage() : SwitchPage() 
+    {
+    }
+    
+    bool handleEvent(gui_event_t *event);
+  
+};
+
+/*  A customized ScrollSwitchPage that also updates the ParentSketch.caPagesIdx[] variable after selecting a Page  */
+class OTLiveScrollSwitchPage : public ScrollSwitchPage {
+	
+    public:    
+    OctatrackLiveSketch *parent;
+    
+    OTLiveScrollSwitchPage() : ScrollSwitchPage() 
+    {
+    }
+    
+    bool handleEvent(gui_event_t *event);
+    
+};
+
+OTLiveScrollSwitchPage otLiveScrollSwitchPage;
+
+
 const char *delayTimeNames[DELAY_TIMES_COUNT] = {
     "/2 ",
     "/4 ",
@@ -320,7 +354,7 @@ class OTCutAddPage : public EncoderPage, public ClockCallback  {
         }
 
     
-	    bool handleEvent(gui_event_t *event) {
+        bool handleEvent(gui_event_t *event) {
    
             if (BUTTON_DOWN(Buttons.BUTTON2)) {
                 // Press Button2 + Button 1 + Enc to "reset" EQ
@@ -371,6 +405,12 @@ class OTCutAddPage : public EncoderPage, public ClockCallback  {
             } else if (EVENT_RELEASED(event, Buttons.BUTTON3)) {
                 stopSupatrigga();
             }
+            
+            // Top Right button
+            if (EVENT_PRESSED(event, Buttons.BUTTON4)) {
+               GUI.pushPage(&otLiveScrollSwitchPage);      
+               return true;         
+            }                
             
             return false;
 

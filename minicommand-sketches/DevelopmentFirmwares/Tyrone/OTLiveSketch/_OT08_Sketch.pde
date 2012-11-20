@@ -3,37 +3,6 @@
 
 #define AUTO_ENC_PAGE_COUNT 2
 #define CUT_ADD_PAGE_COUNT 2
-class OctatrackLiveSketch;
-
-/* A customized SwitchPage that also updates the ParentSketch.activeCaPage variable after selecting a Page  */
-class OTLiveSwitchPage : public SwitchPage{
-  
-    public:    
-    OctatrackLiveSketch *parent;
-    
-    OTLiveSwitchPage() : SwitchPage() 
-    {
-    }
-    
-    bool handleEvent(gui_event_t *event);
-  
-};
-
-/*  A customized ScrollSwitchPage that also updates the ParentSketch.caPagesIdx[] variable after selecting a Page  */
-class OTLiveScrollSwitchPage : public ScrollSwitchPage {
-	
-    public:    
-    OctatrackLiveSketch *parent;
-    
-    OTLiveScrollSwitchPage() : ScrollSwitchPage() 
-    {
-    }
-    
-    bool handleEvent(gui_event_t *event);
-    
-};
-
-
 
 
 class OctatrackLiveSketch : public Sketch{  
@@ -47,8 +16,7 @@ class OctatrackLiveSketch : public Sketch{
     
     OTCutAddPage otCutAddPages[8];
     AutoCCEncoderPage autoCCEncoderPages[AUTO_ENC_PAGE_COUNT];
-    OTLiveSwitchPage otLiveSwitchPage;
-    OTLiveScrollSwitchPage otLiveScrollSwitchPage;
+    OTLiveSwitchPage otLiveSwitchPage;    
     
     OctatrackLiveSketch(){
     }  
@@ -155,13 +123,6 @@ class OctatrackLiveSketch : public Sketch{
         else if (EVENT_RELEASED(event, Buttons.BUTTON1)) {
           popPage(&otLiveSwitchPage);
         }     
-        
-        if (EVENT_PRESSED(event, Buttons.BUTTON4)) {
-          pushPage(&otLiveScrollSwitchPage);
-        } 
-        else if (EVENT_RELEASED(event, Buttons.BUTTON4)) {
-          popPage(&otLiveScrollSwitchPage);
-        }         
 
        return false;
     }   
@@ -199,6 +160,11 @@ bool OTLiveScrollSwitchPage::handleEvent(gui_event_t *event) {
       return true;
     }
   }
+  
+  if (EVENT_RELEASED(event, Buttons.BUTTON4)) {
+     GUI.popPage(this);
+     return true;               
+  } 
   return false;
 }
     
