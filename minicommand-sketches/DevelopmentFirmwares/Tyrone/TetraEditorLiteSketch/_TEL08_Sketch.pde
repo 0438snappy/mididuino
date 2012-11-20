@@ -25,11 +25,15 @@ public:
   void setup() {
     muted = false;
     setupPages();
+
   }
 
   virtual void show() {
     if (currentPage() == NULL){
-      setPage(&tetraEditorPage);
+        setPage(&tetraEditorPage);
+    }
+    if (!TETRA.loadedProgram){
+        TETRA.requestProgramEditBuffer();         
     }
   }   
 
