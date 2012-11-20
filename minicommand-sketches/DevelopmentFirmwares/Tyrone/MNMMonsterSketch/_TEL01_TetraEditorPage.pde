@@ -90,7 +90,6 @@ class TetraEditorPage : public EncoderPage, public TETRACallback {
 
   public:         
         TetraNRPNEncoder tetraEditorEncoders[4];
-        bool sysexLoaded;
         
         TetraEditorPage()
         {
@@ -104,7 +103,6 @@ class TetraEditorPage : public EncoderPage, public TETRACallback {
           if (!isSetup){          
               setEditorPage(false);          
               isSetup = true;
-              sysexLoaded = false;
               TETRASysexListener.setup();
               TETRASysexListener.addOnProgramEditBufferMessageCallback(this, (tetra_callback_ptr_t)&TetraEditorPage::onProgramEditBufferMessageCallback);              
           }

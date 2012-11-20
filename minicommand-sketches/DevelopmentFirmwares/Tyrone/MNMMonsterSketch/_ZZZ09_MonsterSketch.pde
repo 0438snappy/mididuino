@@ -5,13 +5,13 @@
 #include <Merger.h>
 Merger merger;
 MNMTransposeSketch sketch;
-TetraEditorSketch sketch2;
-AutoEncoderSketch sketch3;
+MNMLiveSketch sketch2;
+TetraEditorSketch sketch3;
 SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, &sketch3, NULL);
 
 
 void setup() {
-  initMNMTask();
+
   sketch.setupMonster(true);    
   sketch2.setupMonster(true);
   sketch3.setupMonster(true);  
@@ -27,7 +27,8 @@ void setup() {
   MidiClock.useImmediateClock = true;
   merger.setMergeMask(7); //MERGE_ALL
   MidiClock.start();
-
+  
+  initMNMTask();
 }
 
 bool handleEvent(gui_event_t *event) {
