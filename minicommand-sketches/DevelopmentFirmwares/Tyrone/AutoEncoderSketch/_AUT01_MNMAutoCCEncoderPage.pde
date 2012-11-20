@@ -27,14 +27,13 @@ class AutoCCEncoderPage : public EncoderPage, public ClockCallback {
   RecordingEncoder<RECORDING_LENGTH> recEncoders[4];
 
   bool muted;
-  void on16Callback(uint32_t counter);
+  void on32Callback(uint32_t counter);
   void startRecording();
   void stopRecording();
   void clearRecording();
   void clearRecording(uint8_t i);
   virtual void setup();
 
-  void clearEncoder(uint8_t i);
   void learnEncoder(uint8_t i);
   void autoLearnLast4();
 
@@ -52,14 +51,15 @@ void AutoCCEncoderPage::setup() {
     encoders[i] = &recEncoders[i];
     ccHandler.addEncoder(&realEncoders[i]);
   }
-  MidiClock.addOn16Callback(this, (midi_clock_callback_ptr_t)&AutoCCEncoderPage::on16Callback);
+  MidiClock.addOn32Callback(this, (midi_clock_callback_ptr_t)&AutoCCEncoderPage::on32Callback);
   EncoderPage::setup();
 }
 
 
-void AutoCCEncoderPage::on16Callback(uint32_t counter) {
-  if (muted)
+void AutoCCEncoderPage::on32Callback(uint32_t counter) {
+  if (muted){
     return;
+  }
 
   /*
    * The following code just copies the handling of recording encoders in order to save CPU time.
@@ -106,17 +106,6 @@ void AutoCCEncoderPage::clearRecording(uint8_t i) {
 }
 
 
-
-void AutoCCEncoderPage::clearEncoder(uint8_t i) {
-	
-        realEncoders[i].cc = 0;
-      	realEncoders[i].channel = 0;
-      	realEncoders[i].setName("___");
-      	realEncoders[i].setValue(0);      
-        GUI.redisplay();
-      	ccHandler.incomingCCs.clear();
-        recEncoders[i].clearRecording();
-}
 
 // assigns the last incoming cc in the cchandler buffer to the specified encoder
 
@@ -251,17 +240,12 @@ bool AutoCCEncoderPage::handleEvent(gui_event_t *event) {
         }
       }
         
-      // Pressing Button3 + Button 2 + Encoder = Clear CC assigned to Encoder
-      if (BUTTON_DOWN(Buttons.BUTTON2)) {
-        for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
-          if (EVENT_PRESSED(event, i)) {
+      // Pressing Button3 + Button 2 = Clear all Encoder Recordings
+      if (EVENT_PRESSED(event, Buttons.BUTTON2)) {
             GUI.setLine(GUI.LINE1);
-            GUI.flash_string_fill("CLEAR ENC:");
-            GUI.setLine(GUI.LINE2);
-            GUI.flash_put_value(0, i + 1);
-            clearEncoder(i);            
-          }
-        }
+            GUI.flash_string_fill("CLEAR ALL RECS");
+            clearRecording();
+            ccHandler.incomingCCs.clear();            
       }
   }
   return false;
