@@ -50,6 +50,9 @@ public:
     if (currentPage() == NULL){
       setPage(&tetraEditorPage);
     }
+    if (!TETRA.loadedProgram){
+        TETRA.requestProgramEditBuffer();         
+    }        
   }   
 
   virtual void hide() {
