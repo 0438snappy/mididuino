@@ -351,7 +351,8 @@ PGM_P ot_model_param_name(uint8_t model, uint8_t param) {
   if (param >= OT_AMP_ATTACK) {
     return get_param_name(ot_generic_names, param);
   } else {
-    return get_param_name(get_model_param_names(model), param);
+  	// param is actually the midi CC, so need to subtract 16 as the indices for model params are zero based
+    return get_param_name(get_model_param_names(model), param - OT_PLAYBACK_PARAM1);
   }
 }
 
