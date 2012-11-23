@@ -65,6 +65,25 @@ class OctatrackLiveSketch : public Sketch{
     void setup() {
        muted = false;
        activeCaPage = 0;
+       // Tracks 1-4 are FLEX
+       for (uint8_t i = 0; i < 4; i++) {
+           OT.tracks[i].model = OT_MODEL_FLEX;
+           OT.tracks[i].fx1 = OT_FX_FILTER;
+           OT.tracks[i].fx2 = OT_FX_DELAY;
+       }
+       // Tracks 5&6 are THRU
+       for (uint8_t i = 4; i < 6; i++) {
+           OT.tracks[i].model = OT_MODEL_THRU;
+           OT.tracks[i].fx1 = OT_FX_DJEQ;
+           OT.tracks[i].fx2 = OT_FX_DELAY;           
+       }
+       // Track 7 is FLEX 
+       OT.tracks[6].model = OT_MODEL_THRU;
+       OT.tracks[6].fx1 = OT_FX_DJEQ;
+       OT.tracks[6].fx2 = OT_FX_DELAY;                 
+       // Track 8 is MASTER
+       OT.tracks[7].fx1 = OT_FX_DJEQ;
+       OT.tracks[7].fx2 = OT_FX_DELAY;                         
        ccHandler.setup();
        setupPages();
     }
