@@ -56,7 +56,6 @@ public:
     setupPages();
     ccHandler.setup();    
     MDTask.addOnKitChangeCallback(this, (md_callback_ptr_t)&MDLivePatchSketch::onKitChanged);
-
   }
 
   virtual void show() {
@@ -110,12 +109,11 @@ public:
     }
   }
   
-  void onKitChanged() {
-    
+  void onKitChanged() {    
     for (int i = 0; i < 4; i++) {
-      ((MDFXEncoder *)page.encoders[i])->loadFromKit();
-      ((MDFXEncoder *)page2.encoders[i])->loadFromKit();
-      ((MDFXEncoder *)page3.encoders[i])->loadFromKit();      
+      page.realEncoders[i].loadFromKit();
+      page2.realEncoders[i].loadFromKit();
+      page3.realEncoders[i].loadFromKit();            
     }
   }  
 };
