@@ -7,13 +7,13 @@
  * for specific encoders
  *
  * This version of the page is specialised for MDFXEncoders and does not contain the usual autolearn CC functionality.
- * Use the setup(MDFXEncoder e1, e2, etc...) method to assign pre-initialised MDFX encoders to this page
+ * Use the setup(MDFXEncoder *e1, *e2, etc...) method to assign pointers to pre-initialised MDFX encoders to this page
  *
  **/
 
 class AutoMDFXEncoderPage : public EncoderPage, public ClockCallback {
  public:
-  MDFXEncoder realEncoders[4];
+  MDFXEncoder *realEncoders[4];
   const static int RECORDING_LENGTH = 128; // recording length in 32th
   RecordingEncoder<RECORDING_LENGTH> recEncoders[4];  
   RangeEncoder recLengthEncoders[4];
@@ -27,7 +27,7 @@ class AutoMDFXEncoderPage : public EncoderPage, public ClockCallback {
   void clearRecording();
   void clearRecording(uint8_t i);
   virtual void setup();
-  virtual void setup(MDFXEncoder e1, MDFXEncoder e2, MDFXEncoder e3, MDFXEncoder e4);  
+  virtual void setup(MDFXEncoder *e1, MDFXEncoder *e2, MDFXEncoder *e3, MDFXEncoder *e4);  
   virtual void loop();
   void displayRecLengthEncoders();
   void displayRecLengthEncoders(bool _display);
@@ -36,7 +36,7 @@ class AutoMDFXEncoderPage : public EncoderPage, public ClockCallback {
 };
 
 
-void AutoMDFXEncoderPage::setup(MDFXEncoder e1, MDFXEncoder e2, MDFXEncoder e3, MDFXEncoder e4) {
+void AutoMDFXEncoderPage::setup(MDFXEncoder *e1, MDFXEncoder *e2, MDFXEncoder *e3, MDFXEncoder *e4) {
   realEncoders[0] = e1;
   realEncoders[1] = e2;
   realEncoders[2] = e3;
@@ -51,7 +51,7 @@ void AutoMDFXEncoderPage::setup() {
   guiInRecordMode = true;
   recLengthEncodersDisplayed = false;
   for (uint8_t i = 0; i < 4; i++) {
-    recEncoders[i].initRecordingEncoder(&realEncoders[i]);
+    recEncoders[i].initRecordingEncoder(realEncoders[i]);
     encoders[i] = &recEncoders[i];
     recLengthEncoders[i].initRangeEncoder(RECORDING_LENGTH, 2, "LEN", RECORDING_LENGTH);
   }  
