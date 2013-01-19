@@ -89,7 +89,7 @@ void MDTaskClass::onKitMessageCallback() {
     MD.loadedKit = true;
     if (verbose) {
       GUI.setLine(GUI.LINE1);
-      GUI.flash_p_string_fill(PSTR("SWITCH KIT"));
+      GUI.flash_p_string_fill(PSTR("LOADED MD KIT:"));
       GUI.setLine(GUI.LINE2);
       GUI.flash_string_fill(MD.kit.name);
     }
