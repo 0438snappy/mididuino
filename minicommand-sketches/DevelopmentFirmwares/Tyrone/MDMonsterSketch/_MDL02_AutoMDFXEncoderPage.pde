@@ -1,26 +1,19 @@
-#include <MD.h>
-#include "Platform.h"
-//#include "WProgram.h"
-#include "GUI.h"
-#include "CCHandler.h"
-#include "RecordingEncoder.hh"
-
 /**
- * Creates a page feature 4 encoders that can be configured using a
- * template class parameter. These 4 encoders are overlayed with
- * recording encoder to provide recording functionality. The page also
- * provides autolearning functionality to MIDI learn 4 encoders on the
- * fly.
+ * Creates a page feature 4 encoders that are overlayed with
+ * recording encoder to provide recording functionality. 
  *
  * Redefinition of Manuel's AutoEncoderPage with some changes to 
  * button configurations, plus a couple of new methods to learn and clear CCs
  * for specific encoders
  *
+ * This version of the page is specialised for MDFXEncoders and does not contain the usual autolearn CC functionality.
+ * Use the setup(MDFXEncoder e1, e2, etc...) method to assign pre-initialised MDFX encoders to this page
+ *
  **/
 
-class AutoCCEncoderPage : public EncoderPage, public ClockCallback {
+class AutoMDFXEncoderPage : public EncoderPage, public ClockCallback {
  public:
-  MDEncoder realEncoders[4];
+  MDFXEncoder realEncoders[4];
   const static int RECORDING_LENGTH = 128; // recording length in 32th
   RecordingEncoder<RECORDING_LENGTH> recEncoders[4];  
   RangeEncoder recLengthEncoders[4];
@@ -34,10 +27,8 @@ class AutoCCEncoderPage : public EncoderPage, public ClockCallback {
   void clearRecording();
   void clearRecording(uint8_t i);
   virtual void setup();
+  virtual void setup(MDFXEncoder e1, MDFXEncoder e2, MDFXEncoder e3, MDFXEncoder e4);  
   virtual void loop();
-
-  void learnEncoder(uint8_t i);
-  void autoLearnLast4();
   void displayRecLengthEncoders();
   void displayRecLengthEncoders(bool _display);
 
@@ -45,26 +36,33 @@ class AutoCCEncoderPage : public EncoderPage, public ClockCallback {
 };
 
 
-void AutoCCEncoderPage::setup() {
+void AutoMDFXEncoderPage::setup(MDFXEncoder e1, MDFXEncoder e2, MDFXEncoder e3, MDFXEncoder e4) {
+  realEncoders[0] = e1;
+  realEncoders[1] = e2;
+  realEncoders[2] = e3;
+  realEncoders[3] = e4;
+  setup();
+}
+
+
+void AutoMDFXEncoderPage::setup() {
 
   muted = false;
   guiInRecordMode = true;
   recLengthEncodersDisplayed = false;
   for (uint8_t i = 0; i < 4; i++) {
-    realEncoders[i].setName("___");
     recEncoders[i].initRecordingEncoder(&realEncoders[i]);
     encoders[i] = &recEncoders[i];
-    ccHandler.addEncoder(&realEncoders[i]);
     recLengthEncoders[i].initRangeEncoder(RECORDING_LENGTH, 2, "LEN", RECORDING_LENGTH);
   }  
-  MidiClock.addOn32Callback(this, (midi_clock_callback_ptr_t)&AutoCCEncoderPage::on32Callback);
+  MidiClock.addOn32Callback(this, (midi_clock_callback_ptr_t)&AutoMDFXEncoderPage::on32Callback);
   EncoderPage::setup();
 }
 
 /*
  * Using the page loop() method to look for changes to the recordingLengthEncoders
  */
-void AutoCCEncoderPage::loop() {
+void AutoMDFXEncoderPage::loop() {
   if (!recLengthEncodersDisplayed){
      return; 
   }
@@ -79,14 +77,14 @@ void AutoCCEncoderPage::loop() {
 /*
  * Toggles display between the normal recording encoders, or the recordingLength config encoders
  */
-void AutoCCEncoderPage::displayRecLengthEncoders() {
+void AutoMDFXEncoderPage::displayRecLengthEncoders() {
 
   recLengthEncodersDisplayed = !recLengthEncodersDisplayed;
   displayRecLengthEncoders(recLengthEncodersDisplayed);
 
 }
 
-void AutoCCEncoderPage::displayRecLengthEncoders(bool _display) {
+void AutoMDFXEncoderPage::displayRecLengthEncoders(bool _display) {
   
   recLengthEncodersDisplayed = _display;
 
@@ -102,7 +100,7 @@ void AutoCCEncoderPage::displayRecLengthEncoders(bool _display) {
   redisplayPage ();  
 }
 
-void AutoCCEncoderPage::on32Callback(uint32_t counter) {
+void AutoMDFXEncoderPage::on32Callback(uint32_t counter) {
   if (muted){
     return;
   }
@@ -117,7 +115,7 @@ void AutoCCEncoderPage::on32Callback(uint32_t counter) {
     if (!encoder->playing){
         continue;
     }
-    uint8_t currentPos = pos % encoder->recordingLength;
+    uint8_t currentPos = pos % encoder->recordingLength;   
     
     // Normal Recording Encoder handling
     encoder->currentPos = currentPos;  
@@ -131,93 +129,29 @@ void AutoCCEncoderPage::on32Callback(uint32_t counter) {
 }
 
 
-void AutoCCEncoderPage::startRecording() {
+void AutoMDFXEncoderPage::startRecording() {
   for (uint8_t i = 0; i < 4; i++) {
     recEncoders[i].startRecording();
   }
 }
 
 
-void AutoCCEncoderPage::stopRecording() {
+void AutoMDFXEncoderPage::stopRecording() {
   for (uint8_t i = 0; i < 4; i++) {
     recEncoders[i].stopRecording();
   }
 }
 
 
-void AutoCCEncoderPage::clearRecording() {
+void AutoMDFXEncoderPage::clearRecording() {
   for (uint8_t i = 0; i < 4; i++) {
     recEncoders[i].clearRecording();
   }
 }
 
 
-void AutoCCEncoderPage::clearRecording(uint8_t i) {
+void AutoMDFXEncoderPage::clearRecording(uint8_t i) {
   recEncoders[i].clearRecording();
-}
-
-
-
-// assigns the last incoming cc in the cchandler buffer to the specified encoder
-void AutoCCEncoderPage::learnEncoder(uint8_t i) {
-	  
-  incoming_cc_t cc;	
-  uint8_t count = ccHandler.incomingCCs.size();	
-  for (uint8_t j = 0; j < count; j++) {
-  	  if (j == 0){
-	    ccHandler.incomingCCs.getCopy(j, &cc);
-	    realEncoders[i].initCCEncoder(cc.channel, cc.cc);
-	    realEncoders[i].setValue(cc.value);	    
-	  }
-  }
-}
-
-
-void AutoCCEncoderPage::autoLearnLast4() {
-  /* maps from received CC indexes to encoder indexes */
-  int8_t ccAssigned[4] = { -1, -1, -1, -1 };
-  /* maps from encoder indexes to last received CCs */
-  int8_t encoderAssigned[4] = { -1, -1, -1, -1 };
-  incoming_cc_t ccs[4];
-
-  uint8_t count = ccHandler.incomingCCs.size();
-  for (uint8_t i = 0; i < count; i++) {
-    ccHandler.incomingCCs.getCopy(i, &ccs[i]);
-    incoming_cc_t *cc = &ccs[i];
-    for (uint8_t j = 0; j < 4; j++) {
-      if ((realEncoders[j].getCC() == cc->cc) &&
-          (realEncoders[j].getChannel() == cc->channel)) {
-        ccAssigned[i] = j;
-        encoderAssigned[j] = i;
-        break;
-      }
-    }
-  }
-
-  for (uint8_t i = 0; i < count; i++) {
-    incoming_cc_t *cc = &ccs[i];
-    int8_t idx = ccAssigned[i];
-    if(idx != -1) {
-      /* this check is probably redundant XXX */
-      if ((realEncoders[idx].getChannel() != cc->channel) ||
-          (realEncoders[idx].getCC() != cc->cc)) {
-        realEncoders[idx].initCCEncoder(cc->channel, cc->cc);
-        realEncoders[idx].setValue(cc->value);
-        clearRecording(idx);
-      }
-    } else {
-      for (uint8_t j = 0; j < 4; j++) {
-        if (encoderAssigned[j] == -1) {
-          idx = ccAssigned[i] = j;
-          encoderAssigned[j] = i;
-          realEncoders[idx].initCCEncoder(cc->channel, cc->cc);
-          realEncoders[idx].setValue(cc->value);
-          clearRecording(idx);
-          break;
-        }
-      }
-    }
-  }
 }
 
 
@@ -229,7 +163,7 @@ void AutoCCEncoderPage::autoLearnLast4() {
 *  2)  Playback mode: gui is used to start / stop / modify recording playback options
 *
 */
-bool AutoCCEncoderPage::handleEvent(gui_event_t *event) {
+bool AutoMDFXEncoderPage::handleEvent(gui_event_t *event) {
 
   
   /*
@@ -254,36 +188,6 @@ bool AutoCCEncoderPage::handleEvent(gui_event_t *event) {
   *  RECORD MODE BUTTON OPERATIONS
   */
   if (guiInRecordMode){
-      /*
-      *
-      *  LEARN MODE FUNCTIONS - activated by pressing button 4 + something else...
-      *
-      */
-      if (BUTTON_UP(Buttons.BUTTON2) && EVENT_PRESSED(event, Buttons.BUTTON4)) {
-          GUI.flash_strings_fill("CLICK AN ENCODER", "TO LEARN CC");        
-      }
-      
-      if (BUTTON_UP(Buttons.BUTTON2) && BUTTON_DOWN(Buttons.BUTTON4) ) {
-        
-          // Button 4 + encoder = assign last incoming CC to Encoder  
-          for (uint8_t i = Buttons.ENCODER1; i <= Buttons.ENCODER4; i++) {
-            if (EVENT_PRESSED(event, i)) {
-                GUI.setLine(GUI.LINE1);
-                GUI.flash_string_fill("LEARNED ENC:");
-                GUI.setLine(GUI.LINE2);
-                GUI.flash_put_value(0, i + 1);      
-        	learnEncoder(i);
-        	return true;
-            } 
-          }
-        
-          // Button 4 + Button 3 = assign last 4 incoming CCs to Encoders  
-          if (EVENT_PRESSED(event, Buttons.BUTTON3)) {
-            GUI.flash_strings_fill("AUTO LEARNED", "LAST 4 CCs");
-            autoLearnLast4();
-            return true;
-          }          
-      }
       
       /*
       *
@@ -425,10 +329,8 @@ bool AutoCCEncoderPage::handleEvent(gui_event_t *event) {
               }
           }
       }      
-
  
   }
   return false;
 }
-
 
