@@ -26,23 +26,20 @@ public:
     fbEncoder.initMDFXEncoder( MD_ECHO_FB,   MD_FX_ECHO, "FB",  32);
     levEncoder.initMDFXEncoder(MD_ECHO_LEV,  MD_FX_ECHO, "LEV", 100);
     page.setShortName("DL1");
-//    page.setEncoders(&flfEncoder, &flwEncoder, &fbEncoder, &levEncoder);
-    page.setup(flfEncoder, flwEncoder, fbEncoder, levEncoder);    
+    page.setup(&flfEncoder, &flwEncoder, &fbEncoder, &levEncoder);    
 
     timEncoder.initMDFXEncoder(MD_ECHO_TIME, MD_FX_ECHO, "TIM", 24);
     frqEncoder.initMDFXEncoder(MD_ECHO_MFRQ, MD_FX_ECHO, "FRQ", 0);
     modEncoder.initMDFXEncoder(MD_ECHO_MOD,  MD_FX_ECHO, "MOD", 0);
     page2.setShortName("DL2");
-//    page2.setEncoders(&timEncoder, &frqEncoder, &modEncoder, &fbEncoder);
-    page2.setup(timEncoder, frqEncoder, modEncoder, fbEncoder);    
+    page2.setup(&timEncoder, &frqEncoder, &modEncoder, &fbEncoder);    
     
     eqLowGainEncoder.initMDFXEncoder(MD_EQ_LG, MD_FX_EQ, "LOW", 63);
     eqHighGainEncoder.initMDFXEncoder(MD_EQ_HG, MD_FX_EQ, "HI", 63);
     eqPeakFreqEncoder.initMDFXEncoder(MD_EQ_PF,  MD_FX_EQ, "PF", 63);
     eqPeakGainEncoder.initMDFXEncoder(MD_EQ_PG,  MD_FX_EQ, "PG", 63);
     page3.setShortName("EQ");       
-//    page3.setEncoders(&eqLowGainEncoder, &eqPeakFreqEncoder, &eqPeakGainEncoder, &eqHighGainEncoder);    
-    page3.setup(eqLowGainEncoder, eqPeakFreqEncoder, eqPeakGainEncoder, eqHighGainEncoder);        
+    page3.setup(&eqLowGainEncoder, &eqPeakFreqEncoder, &eqPeakGainEncoder, &eqHighGainEncoder);        
 
     autoCCPage.setup();
     autoCCPage.setShortName("AUT");
@@ -112,9 +109,9 @@ public:
   
   void onKitChanged() {    
     for (int i = 0; i < 4; i++) {
-      page.realEncoders[i].loadFromKit();
-      page2.realEncoders[i].loadFromKit();
-      page3.realEncoders[i].loadFromKit();      
+      ((MDFXEncoder *)page.realEncoders[i])->loadFromKit();
+      ((MDFXEncoder *)page2.realEncoders[i])->loadFromKit();
+      ((MDFXEncoder *)page3.realEncoders[i])->loadFromKit();      
     }
   }  
 };
