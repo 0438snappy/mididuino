@@ -1,10 +1,11 @@
 #include <MelodyHelperSketch.h>
 #include <MidiClockPage.h>
 
-MDLivePatchSketch sketch;
-MelodyHelperSketch sketch2;
+MDLiveSketch sketch;
+MDFXSketch sketch2;
+MelodyHelperSketch sketch3;
 //SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, &sketch3, &sketch4);
-SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, NULL, NULL);
+SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, &sketch3, NULL);
 
 void setup() {
   initMDTask();
