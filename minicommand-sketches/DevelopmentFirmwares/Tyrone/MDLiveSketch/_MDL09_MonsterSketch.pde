@@ -3,7 +3,7 @@
 //
 #include <MidiClockPage.h>
 
-MDLivePatchSketch sketch;
+MDLiveSketch sketch;
 SketchSwitchPage sketchSwitchPage(NULL, &sketch, NULL, NULL, NULL);
 
 void setup() {
