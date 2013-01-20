@@ -19,7 +19,7 @@ public:
 
   void getName(char *n1, char *n2) {
     m_strncpy_p(n1, PSTR("MD  "), 5);
-    m_strncpy_p(n2, PSTR("LIV "), 5);
+    m_strncpy_p(n2, PSTR("FX "), 5);
   }
 
   void setupPages() {
