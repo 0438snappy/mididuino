@@ -6,12 +6,12 @@ public:
 
   MDFXEncoder timEncoder, frqEncoder, modEncoder;  
   AutoMDFXEncoderPage delayPage2;
-  
-  MDFXEncoder eqLowGainEncoder, eqHighGainEncoder, eqPeakFreqEncoder, eqPeakGainEncoder;  
-  AutoMDFXEncoderPage eqPage;  
  
   MDFXEncoder reverbDecEncoder, reverbHpEncoder, reverbLpEncoder, reverbLevEncoder;  
   AutoMDFXEncoderPage reverbPage;  
+
+  MDFXEncoder eqPeakQEncoder, eqPeakFreqEncoder, eqPeakGainEncoder, eqHighGainEncoder;  
+  AutoMDFXEncoderPage eqPage;  
 
   SwitchPage switchPage;
 
@@ -36,12 +36,12 @@ public:
     delayPage2.setShortName("DL2");
     delayPage2.setup(&timEncoder, &frqEncoder, &modEncoder, &fbEncoder);    
     
-    eqLowGainEncoder.initMDFXEncoder(MD_EQ_LG, MD_FX_EQ, "LOW", 63);
-    eqHighGainEncoder.initMDFXEncoder(MD_EQ_HG, MD_FX_EQ, "HI", 63);
     eqPeakFreqEncoder.initMDFXEncoder(MD_EQ_PF,  MD_FX_EQ, "PF", 63);
     eqPeakGainEncoder.initMDFXEncoder(MD_EQ_PG,  MD_FX_EQ, "PG", 63);
+    eqPeakQEncoder.initMDFXEncoder(MD_EQ_PQ, MD_FX_EQ, "PQ", 63);
+    eqHighGainEncoder.initMDFXEncoder(MD_EQ_HG, MD_FX_EQ, "HI", 63);
     eqPage.setShortName("EQ");       
-    eqPage.setup(&eqLowGainEncoder, &eqPeakFreqEncoder, &eqPeakGainEncoder, &eqHighGainEncoder);        
+    eqPage.setup(&eqPeakFreqEncoder, &eqPeakGainEncoder, &eqPeakQEncoder, &eqHighGainEncoder);        
 
     reverbDecEncoder.initMDFXEncoder(MD_REV_DEC, MD_FX_REV, "DEC", 63);
     reverbHpEncoder.initMDFXEncoder(MD_REV_HP, MD_FX_REV, "HP", 0);
@@ -92,7 +92,7 @@ public:
       pushPage(&switchPage);
     } else if (EVENT_RELEASED(event, Buttons.BUTTON1)) {
       popPage(&switchPage);
-    }
+    }        
     return true;
   }
 
