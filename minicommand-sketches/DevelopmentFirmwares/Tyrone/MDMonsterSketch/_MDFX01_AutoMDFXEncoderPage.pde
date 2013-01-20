@@ -1,3 +1,10 @@
+#include <MD.h>
+#include "Platform.h"
+//#include "WProgram.h"
+#include "GUI.h"
+#include "RecordingEncoder.hh"
+
+
 /**
  * Creates a page feature 4 encoders that are overlayed with
  * recording encoder to provide recording functionality. 
@@ -236,7 +243,6 @@ bool AutoMDFXEncoderPage::handleEvent(gui_event_t *event) {
                 GUI.setLine(GUI.LINE1);
                 GUI.flash_string_fill("CLEARED ALL RECS");
                 clearRecording();
-                ccHandler.incomingCCs.clear();        
                 return true;                
           }                                
       }
