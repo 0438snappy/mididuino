@@ -14,13 +14,11 @@ public:
     }
 
     switchPage.initPages(&autoMNMPages[0], &autoMNMPages[1], &autoMNMPages[2], &autoMNMPages[3]);
-//    switchPage.initPages(&autoMNMPages[0], NULL, NULL, NULL);
     switchPage.parent = this;
   }
 
   virtual void setup() {
     setupPages();
-//    MNMTask.addOnKitChangeCallback(this, (mnm_callback_ptr_t)&MNMLiveSketch::onKitChanged);    
     ccHandler.setup();
     setPage(&autoMNMPages[0]);
 //    Midi.addOnNoteOnCallback(this, (midi_callback_ptr_t)&MNMLiveSketch::on3ByteCallback);
@@ -65,13 +63,6 @@ public:
     return true;
   }
 
-//  void onKitChanged() {
-//    GUI.setLine(GUI.LINE1);
-//    GUI.flash_p_string_fill(PSTR("LOADED MNM KIT:"));
-//    GUI.setLine(GUI.LINE2);
-//    GUI.flash_string_fill(MNM.kit.name);
-//  }  
-
   void getName(char *n1, char *n2) {
     m_strncpy_p(n1, PSTR("MNM "), 5);
     m_strncpy_p(n2, PSTR("LIV "), 5);
@@ -88,8 +79,19 @@ public:
       }
   }
 
-//  virtual void mute(bool pressed) {
-//  }
+  virtual void mute(bool pressed) {
+    if (pressed) {
+      muted = !muted;
+      for (int i = 0; i < MNM_AUTO_PAGES_CNT; i++) {
+        autoMNMPages[i].muted = muted;
+      }
+      if (muted) {
+	  GUI.flash_strings_fill("MNM LIVE", "MUTED");
+      } else {
+	  GUI.flash_strings_fill("MNM LIVE", "UNMUTED");
+      }
+    }
+  }
 //
 //  virtual void doExtra(bool pressed) {
 //  }
