@@ -29,15 +29,15 @@ public:
        parameterSyncEnabled = true;
        parameterSyncDisplay = true;
        parameterSpread = 0;
-       polyStartTrack = 3;
-       polyEndTrack = 5;
+       polyStartTrack = 0;
+       polyEndTrack = 3;
        setupPages();
        setMnmMachineForPolyTracks();
        MNMTask.addOnKitChangeCallback(this, (mnm_callback_ptr_t)&MNMMonoPolySketch::onKitChanged);       
-       Midi.addOnNoteOnCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onNoteOn);
-       Midi.addOnNoteOffCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onNoteOff);             
+       Midi2.addOnNoteOnCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onNoteOn);
+       Midi2.addOnNoteOffCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onNoteOff);             
        Midi.addOnControlChangeCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onControlChange);  
-       Midi.addOnProgramChangeCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onProgramChange);
+       Midi2.addOnProgramChangeCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onProgramChange);
 
     }   
 
