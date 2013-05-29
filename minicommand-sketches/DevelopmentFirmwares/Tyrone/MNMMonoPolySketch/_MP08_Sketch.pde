@@ -38,6 +38,7 @@ public:
        Midi2.addOnNoteOnCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onNoteOn);
        Midi2.addOnNoteOffCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onNoteOff);             
        Midi.addOnControlChangeCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onControlChange);  
+       Midi2.addOnControlChangeCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onControlChange);  
        Midi2.addOnProgramChangeCallback(this, (midi_callback_ptr_t)&MNMMonoPolySketch::onProgramChange);
 
     }   
@@ -312,10 +313,9 @@ public:
                      
                      // Update the internal representation of the kit data
                      MNM.kit.parameters[i][param] = value + spread;
-                     if (i != track){
-                         // Update the MNM track itself
-                         MNM.setParam(i, param, value + spread);
-                     }
+                     
+                     // Update the MNM track itself
+                     MNM.setParam(i, param, value + spread);                 
                   }
                   return;
               }      
