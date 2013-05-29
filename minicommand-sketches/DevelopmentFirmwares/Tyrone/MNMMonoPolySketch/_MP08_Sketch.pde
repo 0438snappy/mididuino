@@ -10,10 +10,11 @@ typedef struct mnm_voice_s {
 class MNMMonoPolySketch : public Sketch, public MNMCallback, public MidiCallback  {
 
 public:
-    bool muted, sketchEnabled, parameterSyncEnabled, parameterSyncDisplay;               
-    EncoderPage page1;
+    bool muted, sketchEnabled, parameterSyncEnabled, machineSyncEnabled;               
+    EncoderPage page1, page2;
+    SwitchPage switchPage;
     RangeEncoder polyStartTrackEncoder, polyEndTrackEncoder, parameterSpreadEncoder;
-    BoolEncoder sketchEnabledEncoder, parameterSyncEnabledEncoder;
+    BoolEncoder sketchEnabledEncoder, parameterSyncEnabledEncoder, machineSyncEnabledEncoder;
     uint8_t polyStartTrack, polyEndTrack, polyTotalNumberVoices, parameterSpread;    
     mnm_voice_t mnmVoicePool[6];    
     uint8_t lastUsedMnMVoice[6];
@@ -26,11 +27,11 @@ public:
     void setup() {
        muted = false;
        sketchEnabled = true;
-       parameterSyncEnabled = true;
-       parameterSyncDisplay = true;
+       machineSyncEnabled = false;
+       parameterSyncEnabled = true;       
        parameterSpread = 0;
-       polyStartTrack = 0;
-       polyEndTrack = 3;
+       polyStartTrack = (1 - 1);  // track 1
+       polyEndTrack = (4 -1);     // track 4
        setupPages();
        setMnmMachineForPolyTracks();
        MNMTask.addOnKitChangeCallback(this, (mnm_callback_ptr_t)&MNMMonoPolySketch::onKitChanged);       
@@ -45,10 +46,15 @@ public:
        sketchEnabledEncoder.initBoolEncoder("O-|", sketchEnabled);
        polyStartTrackEncoder.initRangeEncoder(6, 1, "ST ", (polyStartTrack + 1));
        polyEndTrackEncoder.initRangeEncoder(6, 1, "END", (polyEndTrack + 1));
-       parameterSyncEnabledEncoder.initBoolEncoder("SYN", parameterSyncEnabled);
+       machineSyncEnabledEncoder.initBoolEncoder("MSN", machineSyncEnabled);
+       parameterSyncEnabledEncoder.initBoolEncoder("PSN", parameterSyncEnabled);
        parameterSpreadEncoder.initRangeEncoder(64, 0, "SPR", parameterSpread);
-       page1.setEncoders(&sketchEnabledEncoder, &polyStartTrackEncoder, &polyEndTrackEncoder, &parameterSyncEnabledEncoder);
+       page1.setEncoders(&sketchEnabledEncoder, &parameterSpreadEncoder, &parameterSyncEnabledEncoder, &machineSyncEnabledEncoder);
        page1.setShortName("PG1");
+       page2.setEncoders(&sketchEnabledEncoder, &polyStartTrackEncoder, &polyEndTrackEncoder, NULL);
+       page2.setShortName("PG2");      
+       switchPage.initPages(&page1, &page2, NULL, NULL);    
+       switchPage.parent = this;
     }
     
       void onProgramChange(uint8_t *msg) {
@@ -59,17 +65,28 @@ public:
       }    
    
     virtual void show() {
+        if (currentPage() == &switchPage){
+            popPage(&switchPage);
+        }      
         if (currentPage() == NULL){
             setPage(&page1);                        
         }
     }     
+    
+    virtual void hide() {
+      if (currentPage() == &switchPage){
+          popPage(&switchPage);
+      }
+    }        
      
       virtual void mute(bool pressed) {
         if (pressed) {
             muted = !muted;
             if (muted) {
+                sketchEnabled = false;
                 GUI.flash_strings_fill("MNM MONO/POLY:", "MUTED");
             } else {
+                sketchEnabled = sketchEnabledEncoder.getValue();
                 GUI.flash_strings_fill("MNM MONO/POLY:", "UNMUTED");
             }
         }
@@ -118,12 +135,21 @@ public:
                 setPolyTotalNumberVoices ();
 	  }
           if (parameterSyncEnabledEncoder.hasChanged()) {
+                GUI.setLine(GUI.LINE1);
+                GUI.flash_string_fill("PARAMETER SYNC");
                 parameterSyncEnabled = parameterSyncEnabledEncoder.getValue();
 	  }
           if (parameterSpreadEncoder.hasChanged()) {
+                GUI.setLine(GUI.LINE1);
+                GUI.flash_string_fill("PARAMETER SPREAD");
                 parameterSpread = parameterSpreadEncoder.getValue();
 	  }
-          
+          if (machineSyncEnabledEncoder.hasChanged()) {
+                GUI.setLine(GUI.LINE1);
+                GUI.flash_string_fill("MACHINE SYNC");
+                machineSyncEnabled = machineSyncEnabledEncoder.getValue();
+                setMnmMachineForPolyTracks();
+	  }
       }
          
       void setPolyTotalNumberVoices (){
@@ -132,14 +158,15 @@ public:
       
       void setAllPolyVoicesOff(){
           for (uint8_t mnmTrack = polyStartTrack; mnmTrack <= polyEndTrack; mnmTrack++){
-             setNoteOff(mnmTrack);
+             setNoteOff(mnmTrack, 0);
           }
       }
-      
-      
+            
       void setMnmMachineForPolyTracks(){
-          for (uint8_t mnmTrack = polyStartTrack; mnmTrack <= polyEndTrack; mnmTrack++){
-             MNM.setMachine(mnmTrack, polyStartTrack);
+          if (machineSyncEnabled){
+              for (uint8_t mnmTrack = polyStartTrack; mnmTrack <= polyEndTrack; mnmTrack++){
+                 MNM.setMachine(mnmTrack, polyStartTrack);
+              }
           }
       }
          
@@ -152,7 +179,7 @@ public:
               uint8_t note = msg[1];
               uint8_t velocity = msg[2];
               
-              if (((channel >= polyStartTrack + MNM.global.baseChannel) && (channel <= polyEndTrack + MNM.global.baseChannel)) || (channel == MNM.global.autotrackChannel)) {            
+              if (((channel >= polyStartTrack + MNM.global.baseChannel) && (channel <= polyEndTrack + MNM.global.baseChannel)) || ((channel == MNM.global.autotrackChannel) && ((MNM.currentTrack >= polyStartTrack) && (MNM.currentTrack <= polyEndTrack)))) {            
               
                   uint8_t voice = 0xff;                    
                 
@@ -201,7 +228,7 @@ public:
           
           }
           
-          // If we haven't already returned, then ccho the message out on the same midi channel
+          // If we haven't already returned, then echo the message out on the same midi channel
           MidiUart.sendMessage(msg[0], msg[1], msg[2]);      
           
       }      
@@ -211,11 +238,12 @@ public:
           if (sketchEnabled){
         
               // FILTER FOR Poly Track MIDI CHANNELS
-              uint8_t channel = MIDI_VOICE_CHANNEL(msg[0]);            
+              uint8_t channel = MIDI_VOICE_CHANNEL(msg[0]);           
             
-              if (((channel >= polyStartTrack + MNM.global.baseChannel) && (channel <= polyEndTrack + MNM.global.baseChannel)) || (channel == MNM.global.autotrackChannel)) {   
+              if (((channel >= polyStartTrack + MNM.global.baseChannel) && (channel <= polyEndTrack + MNM.global.baseChannel)) || ((channel == MNM.global.autotrackChannel) && ((MNM.currentTrack >= polyStartTrack) && (MNM.currentTrack <= polyEndTrack)))) {            
         
                   uint8_t note = msg[1];
+                  uint8_t velocity = msg[2];                   
                   uint8_t voice = 0xff;          
                 
                   // Look for a voice currently playing this note 
@@ -227,7 +255,7 @@ public:
                   }
                   
                   if (voice != 0xff) {          
-                       setNoteOff(voice);          
+                       setNoteOff(voice, velocity);          
                   }    
                   
                   return;
@@ -252,10 +280,10 @@ public:
           lastUsedMnMVoice[0] = _voice;        
       }
       
-      void setNoteOff(uint8_t _voice){
-        
+      void setNoteOff(uint8_t _voice, uint8_t _velocity){
+                
           // Forward message to the specified MnM Voice
-          MNM.sendNoteOff(_voice, mnmVoicePool[_voice].note);               
+          MNM.sendNoteOff(_voice, mnmVoicePool[_voice].note, _velocity);         
         
           // Remove details of voice from mnmVoicePool
           mnmVoicePool[_voice].note = 0xff;
@@ -296,42 +324,22 @@ public:
           // If we haven't already returned, then echo the message out on the same midi channel
           MidiUart.sendMessage(msg[0], msg[1], msg[2]);
           
-      }      
-         
-      virtual Page *getPage(uint8_t i) {
-        if (i == 0) {
-          return &page1;
-        } else {
-          return NULL;
-        }
-      }            
+      }                      
     
       virtual void doExtra(bool pressed) {
-      }      
-      
-      void toggleParameterSyncDisplay(){
-          parameterSyncDisplay = !parameterSyncDisplay;
-          if(parameterSyncDisplay){
-              page1.setEncoders(&sketchEnabledEncoder, &polyStartTrackEncoder, &polyEndTrackEncoder, &parameterSyncEnabledEncoder);  
-              page1.redisplayPage ();
-          } else {
-              page1.setEncoders(&sketchEnabledEncoder, &polyStartTrackEncoder, &polyEndTrackEncoder, &parameterSpreadEncoder);
-              page1.redisplayPage ();
-          }
-      }
-        
+      }              
         
       virtual void destroy() {
       }
 
    
     virtual bool handleEvent(gui_event_t *event) {  
-
-          // Pressing encoder 4 toggles display of paramSync / paramSyncSpread Encoders
-          if (EVENT_PRESSED(event, Buttons.ENCODER4)) {
-              toggleParameterSyncDisplay();
-              return true;
-          }  
+          if (EVENT_PRESSED(event, Buttons.BUTTON1)) {
+            pushPage(&switchPage);
+          } 
+          else if (EVENT_RELEASED(event, Buttons.BUTTON1)) {
+            popPage(&switchPage);
+          }          
           return false;
     }   
    
