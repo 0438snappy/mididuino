@@ -503,7 +503,7 @@ uint8_t getTetraParameterValue(const tetra_parameter_detail_t *parameter_details
   uint8_t i = 0;
   uint8_t id;
   if (parameter_details == NULL){
-    return 0;
+    return 255;
   }
 
   while ((id = read_byte(&parameter_details[i].parameterNumber)) != 255) {
@@ -522,7 +522,7 @@ uint8_t getTetraParameterValue(const tetra_parameter_detail_t *parameter_details
     i++;
   }  
   
-  return 0;
+  return 255;
 }
 
 uint8_t TETRAClass::getParameterNrpn(uint8_t parameterNumber) {
