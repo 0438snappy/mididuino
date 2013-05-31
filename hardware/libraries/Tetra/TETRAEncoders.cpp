@@ -28,7 +28,7 @@ void TetraNRPNEncoder::initTETRAEncoder(uint8_t _paramNumber = 0xFF){
   // Set min
   min = TETRA.getParameterMin(paramNumber);
   
-  // Set max, nrpn
+  // Set max
   max = TETRA.getParameterMax(paramNumber);
 
   // Set nrpn
