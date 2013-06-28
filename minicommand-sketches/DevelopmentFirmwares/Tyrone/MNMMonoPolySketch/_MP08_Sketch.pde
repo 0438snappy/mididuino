@@ -26,7 +26,7 @@ public:
    
     void setup() {
        muted = false;
-       sketchEnabled = true;
+       sketchEnabled = false;
        machineSyncEnabled = false;
        parameterSyncEnabled = true;       
        parameterSpread = 0;
@@ -230,7 +230,7 @@ public:
           }
           
           // If we haven't already returned, then echo the message out on the same midi channel
-          MidiUart.sendMessage(msg[0], msg[1], msg[2]);      
+          // MidiUart.sendMessage(msg[0], msg[1], msg[2]);      
           
       }      
       
@@ -265,7 +265,7 @@ public:
           } 
           
           // If we haven't already returned, then ccho the message out on the same midi channel
-          MidiUart.sendMessage(msg[0], msg[1], msg[2]);  
+          // MidiUart.sendMessage(msg[0], msg[1], msg[2]);  
           
       }
       
@@ -295,7 +295,7 @@ public:
             
       void onControlChange(uint8_t *msg) {
         
-          if(parameterSyncEnabled){
+          if(parameterSyncEnabled && sketchEnabled){
               
               uint8_t channel = MIDI_VOICE_CHANNEL(msg[0]);
               uint8_t cc = msg[1];
@@ -322,7 +322,7 @@ public:
           }
           
           // If we haven't already returned, then echo the message out on the same midi channel
-          MidiUart.sendMessage(msg[0], msg[1], msg[2]);
+          // MidiUart.sendMessage(msg[0], msg[1], msg[2]);
           
       }                      
     
