@@ -230,7 +230,7 @@ public:
           }
           
           // If we haven't already returned, then echo the message out on the same midi channel
-          MidiUart.sendMessage(msg[0], msg[1], msg[2]);      
+          // MidiUart.sendMessage(msg[0], msg[1], msg[2]);      
           
       }      
       
@@ -265,7 +265,7 @@ public:
           } 
           
           // If we haven't already returned, then ccho the message out on the same midi channel
-          MidiUart.sendMessage(msg[0], msg[1], msg[2]);  
+          // MidiUart.sendMessage(msg[0], msg[1], msg[2]);  
           
       }
       
@@ -322,7 +322,7 @@ public:
           }
           
           // If we haven't already returned, then echo the message out on the same midi channel
-          MidiUart.sendMessage(msg[0], msg[1], msg[2]);
+          // MidiUart.sendMessage(msg[0], msg[1], msg[2]);
           
       }                      
     
