@@ -6,7 +6,8 @@
 //Merger merger;
 //MNMTransposeSketch sketch;
 MNMLiveSketch sketch;
-TetraEditorSketch sketch2;
+MNMMonoPolySketch sketch2;
+//TetraEditorSketch sketch3;
 //SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, &sketch3, NULL);
 SketchSwitchPage sketchSwitchPage(NULL, &sketch, &sketch2, NULL, NULL);
 
