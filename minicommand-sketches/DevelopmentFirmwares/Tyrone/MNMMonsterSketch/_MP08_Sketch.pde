@@ -295,7 +295,7 @@ public:
             
       void onControlChange(uint8_t *msg) {
         
-          if(parameterSyncEnabled){
+          if(parameterSyncEnabled && sketchEnabled){
               
               uint8_t channel = MIDI_VOICE_CHANNEL(msg[0]);
               uint8_t cc = msg[1];
