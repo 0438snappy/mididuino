@@ -1,11 +1,11 @@
 class TetraEditorSketch : 
-public Sketch{  
+public Sketch, public MidiCallback{  
 
 public:
-  bool muted;
-  TetraEditorPage tetraEditorPage;  
+  bool muted;   
   AutoNRPNEncoderPage autoNRPNPages[NRPN_AUTO_PAGES_CNT]; 
   SwitchPage switchPage;
+  TetraCcToNrpnTranslator tetraCcToNrpnTranslator;
 
   TetraEditorSketch() 
   {
@@ -41,6 +41,9 @@ public:
   void setup() {
     muted = false;
     setupPages();
+    tetraCcToNrpnTranslator.setup();
+    Midi2.addOnNoteOnCallback(this, (midi_callback_ptr_t)&TetraEditorSketch::on3ByteMessage);
+    Midi2.addOnNoteOffCallback(this, (midi_callback_ptr_t)&TetraEditorSketch::on3ByteMessage);                        
   }
 
   virtual void show() {
@@ -97,6 +100,12 @@ public:
     }          
     return false;
   }   
+  
+  
+  void on3ByteMessage(uint8_t *msg) {          
+      // Echo the message out on the same midi channel
+      MidiUart.sendMessage(msg[0], msg[1], msg[2]);          
+  } 
 
 };
 
