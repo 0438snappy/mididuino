@@ -12,6 +12,7 @@ void setup() {
   
   sketch.setupMonster(true);
   sketch2.setupMonster(true);
+  sketch3.setupMonster(true);
   GUI.setSketch(&_defaultSketch);
   GUI.setPage(&sketchSwitchPage);
   GUI.addEventHandler(handleEvent);
