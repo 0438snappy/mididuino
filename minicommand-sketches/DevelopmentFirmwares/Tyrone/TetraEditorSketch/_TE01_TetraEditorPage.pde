@@ -220,6 +220,7 @@ class TetraEditorPage : public EncoderPage, public TETRACallback {
 	}
 
 };
+TetraEditorPage tetraEditorPage; 
 
 
 
